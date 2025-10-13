@@ -344,6 +344,7 @@ def print_file_tree(file_tree):
     base_list = ['dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common', 'var']
 
     mid_list = ['miniconda3']
+    #mid_list = []
 
     # Group paths by their root directory
     root_groups = defaultdict(lambda: defaultdict(dict))
@@ -516,21 +517,18 @@ def main():
     parser = argparse.ArgumentParser(description='Trace file access patterns using strace or parse a strace output file.')
     parser.add_argument('target', nargs='?', help='Path to executable')
     parser.add_argument('--file', '-f', dest='strace_file', help='Parse strace output from file instead of running strace')
-    parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
+    #parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
     args = parser.parse_args()
 
     if args.strace_file:
         with open(args.strace_file, 'r') as f:
             strace_lines = f.readlines()
         file_tree = parse_strace_output(strace_lines)
-        if args.print_tree:
-            output_file = args.strace_file + '.contract'
-            with open(output_file, 'w') as f:
-                sys.stdout = f
-                print_file_tree(file_tree)
-                sys.stdout = sys.__stdout__
-        else:
-            print_file_contract(file_tree)
+        output_file = args.strace_file + '.contract'
+        with open(output_file, 'w') as f:
+            sys.stdout = f
+            print_file_tree(file_tree)
+            sys.stdout = sys.__stdout__
     elif args.target:
         proc = run_strace(args.target)
         try:
@@ -543,7 +541,7 @@ def main():
         except KeyboardInterrupt:
             proc.terminate()
     else:
-        print('Usage: python new_pledge_tracer.py <pid|command> [--file <strace_output_file>]')
+        print('Usage: python pledge_tracer.py <pid|command> [--file <strace_output_file>]')
         sys.exit(1)
 
 if __name__ == '__main__':
