@@ -1,38 +1,33 @@
-include ../../../config.mk
-include ../../../rules.mk
-
 PROGRAMS = pledge
 LIBRARIES = libenforcer.so
 
 TARGETS = $(LIBRARIES) $(PROGRAMS)
 
-EXTERNAL_DEPENDENCIES = $(CCTOOLS_HOME)/dttools/src/libdttools.a
+SOURCES = pledge.c list.c list_util.c enforcer.c
+COMMON_SRCS = list.c list_util.c
 
-SOURCES = pledge.c list_util.c enforcer.c
-COMMON_SRCS = list_util.c
+OBJECTS = list.o list_util.o pledge.o enforcer.o
+OBJECTS_PLEDGE = list.o list_util.o pledge.o
 
-OBJECTS = list_util.o util.o pledge.o enforcer.o
-OBJECTS_PLEDGE = list_util.o pledge.o
+CCFLAGS= -Wall -Wextra -g -O2 -std=c99 -D_GNU_SOURCE -fPIC
+#CCFLAGS== -Wall -Wextra -Werror -g -O2 -std=gnu11
 
-# If we want to color output while enforcing
-# DEFS = -DCOLOR_ENFORCING
+EXTERNAL_LINKAGE_NO_OPENSSL = -L--prefix/lib -lresolv -L--prefix/lib -lnsl -lrt -ldl -L--prefix/lib -lz -lstdc++ -lpthread -lz -lc -lm
 
 all: $(TARGETS)
 
-$(PROGRAMS): $(EXTERNAL_DEPENDENCIES)
+pledge: $(OBJECTS_PLEDGE)
 
-pledge: $(OBJECTS_PLEDGE) $(EXTERNAL_DEPENDENCIES)
+libenforcer.so: enforcer.o $(COMMON_SRCS)
+	gcc $(CCFLAGS) $(EXTERNAL_LINKAGE_NO_OPENSSL) -shared -o $@ $^
 
-libenforcer.$(CCTOOLS_DYNAMIC_SUFFIX): enforcer.o $(EXTERNAL_DEPENDENCIES) $(COMMON_SRCS)
-	$(CCTOOLS_CC) $(CCTOOLS_BASE_CCFLAGS) $(CCTOOLS_INTERNAL_CCFLAGS) $(CCTOOLS_EXTERNAL_LINKAGE_NO_OPENSSL)  $(CCTOOLS_DYNAMIC_FLAG) -o $@ $^
-
-libenforcer.h: libenforcer.$(CCTOOLS_DYNAMIC_SUFFIX)
-#	xxd -i -n minienforcer $< > $@
+libenforcer.h: libenforcer.so
+	xxd -i $< > $@
 
 pledge.o: pledge.c libenforcer.h
 
 enforcer.o: enforcer.c
-	 $(CCTOOLS_CC) -o $@ -c $(CCTOOLS_INTERNAL_CCFLAGS) $(LOCAL_CCFLAGS) $(DEFS) $<
+	 gcc -o $@ -c $(CCFLAGS) enforcer.c
 
 format:
 	clang-format -i $(SOURCES)

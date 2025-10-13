@@ -1,6 +1,3 @@
-include ../../config.mk
-include ../../rules.mk
-
 PHONY_TARGETS ?= src
 TARGETS ?= $(PHONY_TARGETS)
 
