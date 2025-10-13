@@ -1,4 +1,4 @@
-PROGRAMS = pledge
+PROGRAMS = enforcer pledge
 LIBRARIES = libenforcer.so
 
 TARGETS = $(LIBRARIES) $(PROGRAMS)
@@ -16,7 +16,7 @@ EXTERNAL_LINKAGE_NO_OPENSSL = -L--prefix/lib -lresolv -L--prefix/lib -lnsl -lrt 
 
 all: $(TARGETS)
 
-pledge: $(OBJECTS_PLEDGE)
+enforcer: $(OBJECTS_PLEDGE)
 
 libenforcer.so: enforcer.o $(COMMON_SRCS)
 	gcc $(CCFLAGS) $(EXTERNAL_LINKAGE_NO_OPENSSL) -shared -o $@ $^
@@ -28,6 +28,24 @@ pledge.o: pledge.c libenforcer.h
 
 enforcer.o: enforcer.c
 	 gcc -o $@ -c $(CCFLAGS) enforcer.c
+
+pledge: pledge new_pledge_tracer.py
+	echo '#!/bin/sh' > $@
+	echo 'case "$$1" in' >> $@
+	echo '  --trace)' >> $@
+	echo '    shift' >> $@
+	echo '    python3 $(PWD)/new_pledge_tracer.py "$$@"' >> $@
+	echo '    ;;' >> $@
+	echo '  --enforce)' >> $@
+	echo '    shift' >> $@
+	echo '    $(PWD)/pledge "$$@"' >> $@
+	echo '    ;;' >> $@
+	echo '  *)' >> $@
+	echo '    echo "Usage: $$0 [--trace|--enforce] args..."' >> $@
+	echo '    exit 1' >> $@
+	echo '    ;;' >> $@
+	echo 'esac' >> $@
+	chmod +x $@
 
 format:
 	clang-format -i $(SOURCES)
