@@ -5,6 +5,8 @@ from collections import defaultdict
 import argparse
 import os
 
+from queue import Queue
+
 access_legend = {
     'read': 'R',
     'write': 'W',
@@ -106,50 +108,45 @@ def parse_strace_output(strace_lines):
     fd_to_file = {}
     fd_offsets = defaultdict(int)
 
-    # openat(AT_FDCWD</path>, "file.txt", O_WRONLY|O_CREAT|O_APPEND, 0666) = 3</path/file.txt>
     open_re = re.compile(
         r'open(?:at)?\([^,]*, "?([^"]+)"?, ([^,)]+)(?:, [^)]*)?\).*?= (\d+)<([^>]+)>'
     )
     read_re = re.compile(r'read\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
     write_re = re.compile(r'write\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
-    #write_re = re.compile(r'write\((\d+),.*?, (\d+)\).*? <.*>.*? ([^ ]+)$')
-    #mmap_re = re.compile(r'mmap\((.*), (\d+), ([^,]+), .*?, (\d+), (\d+)\).*? <.*>.*? ([^ ]+)$')
     mmap_re = re.compile(r'mmap\((?:.*), (?:.*), (?:.*), (.*), .*<(.*)>, (?:.*)\)')
     getdents_re = re.compile(r'getdents64\((\d+),')
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
-
-# [pid 2011208] execve("/users/cthoma26/Montage/bin/mImgtbl", ["mImgtbl", "rawdir", "images-rawdir.tbl"], 0x5599dec1c5a0 /* 78 vars */) = 0
-
     exec_re = re.compile(r'execve\("([^"]+)", .*= *(?:-?\d+)')
     
-    #newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
-
-    # newfstatat_wsize_re = re.compile(
-    #     r'newfstatat\(.?<(.*)>,.?\"(.*)",.?(?:{.*.|(?:st_size=(.*)),.*}).?,.*\) ='
-
-    # )
-
-    # newfstatat_wsize_re = re.compile(
-    #     r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\".*|(?:st_size=(.*),.*)='
-
-    # )
     newfstatat_wsize_re = re.compile(
-        r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)='
-
+        r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)= -?[0-9]'
     )
 
     stat_or_lstat = re.compile(
         r'l?stat\(\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)='
 
     )
-    
 
-    #    newfstatat_wsize_re = re.compile(
-    #     r'newfstatat\((?:\d+<([^>]+)>|AT_FDCWD<([^>]+)>), [^,]+, \{[^}]*st_size=(\d+)[^}]*\}[^)]*\)'
-    # )
-
+    incomplete_lines = Queue()
     for line in strace_lines:
+        # 2677224 mkdirat(AT_FDCWD</tmp/worker-241627-2677224>, "/tmp/worker-241627-2677224", 0777 <unfinished ...>
+        # 2677224 <... mkdirat resumed> ) = 0
+
+        reconstructed = False
+
+        if ' <unfinished ...>' in line:
+            # store the unfinished line and continue
+            incomplete_lines.put(line)
+            continue
+        elif ' <... ' in line:
+            # construct the full line
+            line_begin = incomplete_lines.get()
+            line_end = ''.join(line.split(' resumed>')[1:])
+            line = line_begin.replace(' <unfinished ...>', line_end)
+            reconstructed = True
+            #print("Reconstructed line:", line)
+
         m = open_re.search(line)
         if m:
             print("openat")
@@ -268,6 +265,9 @@ def parse_strace_output(strace_lines):
             #print(filename)
             #print(line)
 
+            if reconstructed:
+                print("Reconstructed line:", line)
+
             #AT_EMPTY_PATH
             if filename is None:
                 continue
@@ -325,6 +325,8 @@ def parse_strace_output(strace_lines):
                 file_tree[filename] = FileAccessNode(filename)
             file_tree[filename].add_access('exec')
             continue
+
+    
 
     return file_tree
 def print_file_contract(file_tree):

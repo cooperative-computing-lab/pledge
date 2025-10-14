@@ -29,12 +29,12 @@ pledge.o: pledge.c libenforcer.h
 enforcer.o: enforcer.c
 	 gcc -o $@ -c $(CCFLAGS) enforcer.c
 
-pledge: pledge new_pledge_tracer.py
+pledge: pledge pledge_tracer.py
 	echo '#!/bin/sh' > $@
 	echo 'case "$$1" in' >> $@
 	echo '  --trace)' >> $@
 	echo '    shift' >> $@
-	echo '    python3 $(PWD)/new_pledge_tracer.py "$$@"' >> $@
+	echo '    python3 $(PWD)/pledge_tracer.py "$$@"' >> $@
 	echo '    ;;' >> $@
 	echo '  --enforce)' >> $@
 	echo '    shift' >> $@
