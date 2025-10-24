@@ -12,7 +12,7 @@ OBJECTS_PLEDGE = list.o list_util.o pledge.o
 CCFLAGS= -Wall -Wextra -g -O2 -std=c99 -D_GNU_SOURCE -fPIC
 #CCFLAGS== -Wall -Wextra -Werror -g -O2 -std=gnu11
 
-EXTERNAL_LINKAGE_NO_OPENSSL = -L--prefix/lib -lresolv -L--prefix/lib -lnsl -lrt -ldl -L--prefix/lib -lz -lstdc++ -lpthread -lz -lc -lm
+#EXTERNAL_LINKAGE_NO_OPENSSL = -L--prefix/lib -lresolv -L--prefix/lib -lrt -ldl -L--prefix/lib
 
 all: $(TARGETS)
 
@@ -29,7 +29,7 @@ pledge.o: pledge.c libenforcer.h
 enforcer.o: enforcer.c
 	 gcc -o $@ -c $(CCFLAGS) enforcer.c
 
-pledge: pledge pledge_tracer.py
+pledge: pledge_tracer.py
 	echo '#!/bin/sh' > $@
 	echo 'case "$$1" in' >> $@
 	echo '  --trace)' >> $@

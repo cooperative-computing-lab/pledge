@@ -96,16 +96,20 @@ class FileAccessNode:
         return all(b == a + 1 for a, b in zip(offsets, offsets[1:]))
 
 def run_strace(pid_or_cmd):
-    if pid_or_cmd.isdigit():
-        cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek', '-p', pid_or_cmd]
-    else:
-        cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek'] + pid_or_cmd.split()
+    # if pid_or_cmd.isdigit():
+    #     cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek', '-p', pid_or_cmd]
+    # else:
+    #     cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek'] + pid_or_cmd.split()
+
+    cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek,clone'] + pid_or_cmd[0].split(' ')
+    print("Running command:", ' '.join(pid_or_cmd))
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
     return proc
 
 def parse_strace_output(strace_lines):
 
     pid_tree = defaultdict(lambda: defaultdict(FileAccessNode))
+    pid_dependence_tree = {}
     fd_to_file = {}
     fd_offsets = defaultdict(int)
 
@@ -119,6 +123,9 @@ def parse_strace_output(strace_lines):
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
     exec_re = re.compile(r'execve\("([^"]+)", .*= *(?:-?\d+)')
+    # 1962296 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f3e278aa710) = 1962358
+
+    clone_re = re.compile(r'clone\(.*\) = ([0-9]+)')
     
     newfstatat_wsize_re = re.compile(
         r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)= -?[0-9]'
@@ -129,16 +136,26 @@ def parse_strace_output(strace_lines):
 
     )
 
+    strace_output = open('strace_output.log', 'w')
+
     incomplete_lines = Queue()
     for line in strace_lines:
+        strace_output.write(line)
         # 2677224 mkdirat(AT_FDCWD</tmp/worker-241627-2677224>, "/tmp/worker-241627-2677224", 0777 <unfinished ...>
         # 2677224 <... mkdirat resumed> ) = 0
 
         pid = line.split(' ')[0]
+        if 'pid' in pid:
+            # pid = [pid 1234]
+            pid = line.split(' ')[1].strip('[]')
         if not pid.isdigit():
             pid = 0  # for lines without PID prefix
 
         file_tree = pid_tree[pid]  # for single process tracing
+        
+        if pid not in pid_dependence_tree.keys():
+            pid_dependence_tree[pid] = {}
+
 
         reconstructed = False
 
@@ -156,7 +173,7 @@ def parse_strace_output(strace_lines):
 
         m = open_re.search(line)
         if m:
-            print("openat")
+            #print("openat")
             requested, flags, fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -187,7 +204,7 @@ def parse_strace_output(strace_lines):
 
         m = fd_file_re.search(line)
         if m:
-            print("fdinfo")
+            #print("fdinfo")
             fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -196,7 +213,7 @@ def parse_strace_output(strace_lines):
 
         m = lseek_re.search(line)
         if m:
-            print("lseek")
+            #print("lseek")
             fd, offset, _, result = m.groups()
             fd_offsets[fd] = int(result)
             continue
@@ -220,21 +237,21 @@ def parse_strace_output(strace_lines):
 
         m = write_re.search(line)
         if m:
-            print("write")
+            #print("write")
             fd, filename, requested, length = m.groups()
             offset = fd_offsets.get(fd, 0)
             try:
                 file_tree[filename].add_access('write', offset, int(length))
             except:
-                print(f"Warning: write to unknown file descriptor {fd} ({filename})")
+                #print(f"Warning: write to unknown file descriptor {fd} ({filename})")
                 file_tree[filename] = FileAccessNode(filename)
                 file_tree[filename].add_access('write', offset, int(length))
             continue
 
         m = mmap_re.search(line)
         if m:
-            print("mmap")
-            print(m.groups())
+            #print("mmap")
+            #print(m.groups())
             flags, filename = m.groups()
             
             if not filename.startswith('/'):
@@ -261,7 +278,7 @@ def parse_strace_output(strace_lines):
 
         m = newfstatat_wsize_re.search(line)
         if m:
-            print("newfstatat_size")
+            #print("newfstatat_size")
             #print(line)
             if len(m.groups()) != 3:
                 print("Warning: unexpected newfstatat match groups:", m.groups())
@@ -272,8 +289,8 @@ def parse_strace_output(strace_lines):
             #print(filename)
             #print(line)
 
-            if reconstructed:
-                print("Reconstructed line:", line)
+            #if reconstructed:
+                #print("Reconstructed line:", line)
 
             #AT_EMPTY_PATH
             if filename is None:
@@ -284,11 +301,11 @@ def parse_strace_output(strace_lines):
             
             if 'ENOENT' in line:
                 file_tree[filename].add_access('enoent')
-                print("enoent")
-                print(filename)
+                #print("enoent")
+                #print(filename)
                 continue
-            
-            print(filename)
+
+            #print(filename)
             file_tree[filename].add_access('stat')
             if st_size is not None:
                 file_tree[filename].st_size = int(st_size)
@@ -296,7 +313,7 @@ def parse_strace_output(strace_lines):
 
         m = stat_or_lstat.search(line)
         if m:
-            print("stat or lstat")
+            #print("stat or lstat")
             #print(line)
        
             if len(m.groups()) != 2:
@@ -326,24 +343,83 @@ def parse_strace_output(strace_lines):
 
         m = exec_re.search(line)
         if m:
-            print("execve")
+            #print("execve")
             filename = m.groups()[0]
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
             file_tree[filename].add_access('exec')
             continue
 
-    return pid_tree
+        m = clone_re.search(line)
+        if m:
+            newpid = m.groups()[0]
+            pid_dependence_tree[pid].update({newpid: {}})
+
+    
+    strace_output.close()
+
+    return pid_tree, pid_dependence_tree
 
 
-def print_file_tree(pid_tree):
+
+def print_file_tree(pid_tree, pid_dep, no_pid=False):
+
+    #sort pid dep tree
+    # Reorganize pid_dep to handle subprocess relationships
+    # pids = list(pid_dep.keys())
+    # pid_dep_copy = {}
+    # for pid in pids:
+    #     for subprocess_pid in pid_dep[pid].keys():
+    #         if subprocess_pid in pid_dep:
+    #             # Move the subprocess pid entry into the parent's value dict
+    #             if pid not in pid_dep_copy:
+    #                 pid_dep_copy[pid] = {}
+    #             pid_dep_copy[pid][subprocess_pid] = pid_dep[subprocess_pid]
+
+
+    if no_pid:
+        # Merge all pid trees into a single tree under pid '0'
+        merged_tree = defaultdict(FileAccessNode)
+        for pid in pid_tree:
+            file_tree = pid_tree[pid]
+            for filename, node in file_tree.items():
+                if filename not in merged_tree:
+                    merged_tree[filename] = node
+                else:
+                    # merge access modes and counts
+                    existing_node = merged_tree[filename]
+                    existing_node.modes.update(node.modes)
+                    existing_node.read_offsets.extend(node.read_offsets)
+                    existing_node.write_offsets.extend(node.write_offsets)
+                    existing_node.mmap_access.extend(node.mmap_access)
+                    existing_node.getdents = existing_node.getdents or node.getdents
+                    existing_node.total_bytes_read += node.total_bytes_read
+                    existing_node.num_reads += node.num_reads
+                    existing_node.num_writes += node.num_writes
+                    existing_node.num_stats += node.num_stats
+                    existing_node.num_mmaps += node.num_mmaps
+                    existing_node.num_getdents += node.num_getdents
+                    existing_node.num_creates += node.num_creates
+                    existing_node.num_enoent += node.num_enoent
+                    existing_node.num_mmapsh += node.num_mmapsh
+                    existing_node.num_exec += node.num_exec
+        # Replace pid_tree with merged tree under pid '0'
+        pid_tree = { '0': merged_tree }
+ 
     # Build a directory tree: {dirpath: {filename: node}}
     print("Access       <Directory>    Count")
     for pid in pid_tree:
         file_tree = pid_tree[pid]
         print(f"\nProcess ID: {pid}")
         dir_tree = defaultdict(dict)
+
+        # keep track of number of specific filenames accessed to identify searching patterns
+        files_repeat = defaultdict(int)
+
         for filename, node in file_tree.items():
+            file = filename.split('/')[-1]
+            if node.num_enoent > 0:
+                files_repeat[file] = files_repeat[file] + 1
             dirpath = os.path.dirname(filename)
             dir_tree[dirpath][filename] = node
 
@@ -364,9 +440,8 @@ def print_file_tree(pid_tree):
             total_files = 0
             mode_counts = defaultdict(int)
             access_patterns = defaultdict(int)
-            stat_count = 0
-            read_count = 0
-            write_count = 0
+            exec_files = []
+
             for dirpath, files in root_groups[root].items():
                 total_files += len(files)
                 for fname, node in files.items():
@@ -380,12 +455,18 @@ def print_file_tree(pid_tree):
                     mode_counts['enoent'] += node.num_enoent
                     mode_counts['mmapsh'] += node.num_mmapsh
                     mode_counts['exec'] += node.num_exec
+                    if node.num_exec > 0:
+                        exec_files.append(fname)
                     for access_pattern in node.access_pattern():
                         access_patterns[access_pattern] += 1
                 dir_tree.pop(dirpath)  # Remove printed paths from tree
             if total_files > 0:
                 mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
                 print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} </{root}> ({total_files} files) [{mode_summary}]")
+                if exec_files:
+                    in_this_subpath = [f for f in exec_files if f.startswith(f'/{root}/')]
+                    if in_this_subpath:
+                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -394,9 +475,7 @@ def print_file_tree(pid_tree):
                 total_files = 0
                 mode_counts = defaultdict(int)
                 access_patterns = defaultdict(int)
-                stat_count = 0
-                read_count = 0
-                write_count = 0
+                exec_files = []
                 mid_abs = f'/{mid}'
                 for dirpath, files in mid_paths.items():
                     total_files += len(files)
@@ -414,11 +493,17 @@ def print_file_tree(pid_tree):
                         mode_counts['enoent'] += node.num_enoent
                         mode_counts['mmapsh'] += node.num_mmapsh
                         mode_counts['exec'] += node.num_exec
+                        if node.num_exec > 0:
+                            exec_files.append(fname)
                         for access_pattern in node.access_pattern():
                             access_patterns[access_pattern] += 1
                 mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
                 print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} <{mid_abs}> ({total_files} files) [{mode_summary}]")
-                
+                if exec_files:
+                    in_this_subpath = [f for f in exec_files if f.startswith(f'/{mid}/')]
+                    if in_this_subpath:
+                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
+
                 # Remove printed paths from tree
                 for dirpath in mid_paths.keys():
                     dir_tree.pop(dirpath)
@@ -426,6 +511,7 @@ def print_file_tree(pid_tree):
         # Handle remaining paths
         # if a directory is a local reference, find the absolute path in the tree and combine them
         local_refs = {dirpath: files for dirpath, files in dir_tree.items() if not dirpath.startswith('/')}
+
         #print(local_refs)
         for dirpath, files in local_refs.items():
             # try to find absolute path using cwd from openat calls
@@ -450,6 +536,11 @@ def print_file_tree(pid_tree):
                         parent_node.num_mmaps += node.num_mmaps
                         parent_node.num_getdents += node.num_getdents
                         parent_node.num_creates += node.num_creates
+                        parent_node.num_enoent += node.num_enoent
+                        parent_node.num_mmapsh += node.num_mmapsh
+                        parent_node.num_exec += node.num_exec
+                        if node.num_exec > 0:
+                            exec_files.append(fname)
                 # Remove local ref from tree
                 dir_tree.pop(dirpath)
 
@@ -495,6 +586,9 @@ def print_file_tree(pid_tree):
                             if node.num_creates > 0: path_modes['create'] += node.num_creates
                             if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
                             if node.num_exec > 0: path_modes['exec'] += node.num_exec
+                            if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
+                            if node.num_exec > 0:
+                                exec_files.append(node.filename) if node.filename not in exec_files else None
 
                 # If we have ≤2 access modes at this level, use it
                 if len([m for m,c in path_modes.items() if c > 0]) <= 2:
@@ -514,35 +608,46 @@ def print_file_tree(pid_tree):
                 dir_summary = f"<{path}>"
                 access_chars = ''.join(access_legend[mode] for mode, count in sorted(mode_counts.items()) if count > 0)
                 print(f"{access_chars} {dir_summary} ({total_files} files) [{mode_summary}]")
+                if 'X' in access_chars and exec_files:
+                    in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
+                    if in_this_subpath:
+                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
 
-   
-
+        search_files = []
+        for file, count in files_repeat.items():
+            if count > 3:
+                search_files.append(file)
+        if search_files:
+            print("Searching for: " + ', '.join(search_files))
 
 def main():
 
     parser = argparse.ArgumentParser(description='Trace file access patterns using strace or parse a strace output file.')
-    parser.add_argument('target', nargs='?', help='Path to executable')
+    parser.add_argument('target', nargs='*', help='Path to executable')
     parser.add_argument('--file', '-f', dest='strace_file', help='Parse strace output from file instead of running strace')
+    parser.add_argument('--nopid', '-p', dest='no_pid', help='Do not separate output by PID', action='store_true')
     #parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
     args = parser.parse_args()
+
+    print(args.target)
 
     if args.strace_file:
         with open(args.strace_file, 'r') as f:
             strace_lines = f.readlines()
-        pid_tree = parse_strace_output(strace_lines)
+        pid_tree, pid_dep = parse_strace_output(strace_lines)
         output_file = args.strace_file + '.contract'
         with open(output_file, 'w') as f:
             sys.stdout = f
-            print_file_tree(pid_tree)
+            print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
             sys.stdout = sys.__stdout__
     elif args.target:
         proc = run_strace(args.target)
         try:
-            pid_tree = parse_strace_output(proc.stderr)
+            pid_tree, pid_dep = parse_strace_output(proc.stderr)
             output_file = str(args.target) + '.contract'
             with open(output_file, 'w') as f:
                 sys.stdout = f
-                print_file_tree(pid_tree)
+                print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
                 sys.stdout = sys.__stdout__
         except KeyboardInterrupt:
             proc.terminate()
