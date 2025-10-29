@@ -41,6 +41,8 @@ class FileAccessNode:
         self.num_creates = 0
         self.num_enoent = 0
         self.num_exec = 0
+        self.read_perm = False
+        self.write_perm = False
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -192,11 +194,15 @@ def parse_strace_output(strace_lines):
             # Parse access mode from flags
             if 'O_RDONLY' in flags:
                 file_tree[filename].add_access('read')
+                file_tree[filename].read_perm = True
             elif 'O_WRONLY' in flags:
                 file_tree[filename].add_access('write')
+                file_tree[filename].write_perm = True
             elif 'O_RDWR' in flags:
                 file_tree[filename].add_access('read')
                 file_tree[filename].add_access('write')
+                file_tree[filename].read_perm = True
+                file_tree[filename].write_perm = True
             if 'O_CREAT' in flags:
                 file_tree[filename].add_access('create')
                     
@@ -415,11 +421,18 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
 
         # keep track of number of specific filenames accessed to identify searching patterns
         files_repeat = defaultdict(int)
+        rw_mismatch_files = []
 
         for filename, node in file_tree.items():
             file = filename.split('/')[-1]
             if node.num_enoent > 0:
                 files_repeat[file] = files_repeat[file] + 1
+
+            if node.read_perm and node.num_reads == 0:
+                rw_mismatch_files.append(filename)
+            elif node.write_perm and node.num_writes == 0:
+                rw_mismatch_files.append(filename)
+
             dirpath = os.path.dirname(filename)
             dir_tree[dirpath][filename] = node
 
@@ -620,6 +633,10 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
         if search_files:
             print("Searching for: " + ', '.join(search_files))
 
+        if rw_mismatch_files:
+            print("Read/Write permission mismatches (requested but not performed):")
+            print(''.join(rw_mismatch_files))
+
 def main():
 
     parser = argparse.ArgumentParser(description='Trace file access patterns using strace or parse a strace output file.')
@@ -636,7 +653,7 @@ def main():
             strace_lines = f.readlines()
         pid_tree, pid_dep = parse_strace_output(strace_lines)
         output_file = args.strace_file + '.contract'
-        with open(output_file, 'w') as f:
+        with open(output_file, 'w+') as f:
             sys.stdout = f
             print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
             sys.stdout = sys.__stdout__
@@ -644,8 +661,8 @@ def main():
         proc = run_strace(args.target)
         try:
             pid_tree, pid_dep = parse_strace_output(proc.stderr)
-            output_file = str(args.target) + '.contract'
-            with open(output_file, 'w') as f:
+            output_file = str(args.target[0].strip('./')) + '.contract'
+            with open(output_file, 'w+') as f:
                 sys.stdout = f
                 print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
                 sys.stdout = sys.__stdout__
