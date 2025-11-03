@@ -103,6 +103,8 @@ def run_strace(pid_or_cmd):
     # else:
     #     cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek'] + pid_or_cmd.split()
 
+    # strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone 
+
     cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek,clone'] + pid_or_cmd[0].split(' ')
     print("Running command:", ' '.join(pid_or_cmd))
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
@@ -356,6 +358,9 @@ def parse_strace_output(strace_lines):
             file_tree[filename].add_access('exec')
             continue
 
+        # newpid = [pid x]
+        # oldpid = 
+
         m = clone_re.search(line)
         if m:
             newpid = m.groups()[0]
@@ -411,11 +416,64 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
                     existing_node.num_exec += node.num_exec
         # Replace pid_tree with merged tree under pid '0'
         pid_tree = { '0': merged_tree }
+
+    # if there is no exec in a pid merge it with the parent
+    else:
+        pids_to_remove = []
+        for pid in pid_tree:
+            file_tree = pid_tree[pid]
+            has_exec = any(node.num_exec > 0 for node in file_tree.values())
+            if not has_exec:
+                # find parent pid
+                parent_pid = None
+                for ppid, children in pid_dep.items():
+                    if pid in children:
+                        parent_pid = ppid
+                        break
+                if parent_pid and parent_pid in pid_tree:
+                    parent_tree = pid_tree[parent_pid]
+                    for filename, node in file_tree.items():
+                        if filename not in parent_tree:
+                            parent_tree[filename] = node
+                        else:
+                            # merge access modes and counts
+                            parent_node = parent_tree[filename]
+                            parent_node.modes.update(node.modes)
+                            parent_node.read_offsets.extend(node.read_offsets)
+                            parent_node.write_offsets.extend(node.write_offsets)
+                            parent_node.mmap_access.extend(node.mmap_access)
+                            parent_node.getdents = parent_node.getdents or node.getdents
+                            parent_node.total_bytes_read += node.total_bytes_read
+                            parent_node.num_reads += node.num_reads
+                            parent_node.num_writes += node.num_writes
+                            parent_node.num_stats += node.num_stats
+                            parent_node.num_mmaps += node.num_mmaps
+                            parent_node.num_getdents += node.num_getdents
+                            parent_node.num_creates += node.num_creates
+                            parent_node.num_enoent += node.num_enoent
+                            parent_node.num_mmapsh += node.num_mmapsh
+                            parent_node.num_exec += node.num_exec
+                    pids_to_remove.append(pid)
+        for pid in pids_to_remove:
+            pid_tree.pop(pid)
+
  
     # Build a directory tree: {dirpath: {filename: node}}
     print("Access       <Directory>    Count")
     for pid in pid_tree:
+        
         file_tree = pid_tree[pid]
+
+        #print(file_tree)
+
+        if not file_tree:
+            continue
+        
+        # if the file tree only contains pipe, anon_inode etc...
+        if all('anon_inode' in filename for filename in file_tree.keys()):
+            continue
+
+
         print(f"\nProcess ID: {pid}")
         dir_tree = defaultdict(dict)
 
@@ -566,6 +624,9 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
             'dirpaths': set()
         })
 
+       
+
+
         # find a description level which isolates access modes per root directory
         for dirpath, files in dir_tree.items():
             if not dirpath:  # Handle root directory case
@@ -603,8 +664,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
                             if node.num_exec > 0:
                                 exec_files.append(node.filename) if node.filename not in exec_files else None
 
-                # If we have ≤2 access modes at this level, use it
-                if len([m for m,c in path_modes.items() if c > 0]) <= 2:
+                # If we have ≤2 access modes at this level or we reached the full depth, group the paths here
+                if len([m for m,c in path_modes.items() if c > 0]) <= 2 or depth == len(parts):
                     group = remaining_groups[current_path]
                     group['total_files'] = path_files
                     group['dirpaths'].add(current_path)
