@@ -364,7 +364,11 @@ def parse_strace_output(strace_lines):
             filename = m.groups()[0]
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
-            file_tree[filename].add_access('exec')
+            
+            if 'ENOENT' in line:
+                file_tree[filename].add_access('enoent')
+            else:
+                file_tree[filename].add_access('exec')
             continue
 
         # newpid = [pid x]
