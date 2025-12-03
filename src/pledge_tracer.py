@@ -437,12 +437,17 @@ def print_process_tree(pid_tree, pid_dep):
     for pid, level in process_tree:
         if pid in pid_tree and pid_tree[pid]:  # Only show processes that accessed files
             indent = "  " * level
+            # print the executable if available
+            executable = []
+            for filename, node in pid_tree[pid].items():
+                if node.num_exec > 0:
+                    executable.append(filename)
             if level == 0:
-                print(f"{indent}├─ PID {pid} (root)")
+                print(f"{indent}├─ PID {pid} (root) [{', '.join(executable) if executable else 'unknown'}]")
             else:
-                print(f"{indent}├─ PID {pid} (child)")
+                print(f"{indent}├─ PID {pid} (child) [{', '.join(executable) if executable else 'unknown'}]")
 
-def print_file_tree(pid_tree, pid_dep, no_pid=False):
+def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
 
     #sort pid dep tree
     # Reorganize pid_dep to handle subprocess relationships
@@ -571,7 +576,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
             dirpath = os.path.dirname(filename)
             dir_tree[dirpath][filename] = node
 
-        base_list = ['dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common', 'var']
+        base_list = ['', 'dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common', 'var']
 
         mid_list = ['miniconda3']
         #mid_list = []
@@ -591,6 +596,9 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
             exec_files = []
 
             for dirpath, files in root_groups[root].items():
+                if skip_base_dirs:
+                    dir_tree.pop(dirpath)
+                    continue
                 total_files += len(files)
                 for fname, node in files.items():
                     #mode_counts['open'] += node.num_opens
