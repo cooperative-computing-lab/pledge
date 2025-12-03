@@ -29,6 +29,8 @@ pledge.o: pledge.c libenforcer.h
 enforcer.o: enforcer.c
 	 gcc -o $@ -c $(CCFLAGS) enforcer.c
 
+pledge_binary: $(OBJECTS_PLEDGE)
+
 pledge: pledge_tracer.py
 	echo '#!/bin/sh' > $@
 	echo 'case "$$1" in' >> $@
@@ -38,7 +40,7 @@ pledge: pledge_tracer.py
 	echo '    ;;' >> $@
 	echo '  --enforce)' >> $@
 	echo '    shift' >> $@
-	echo '    $(PWD)/pledge "$$@"' >> $@
+	echo '    $(PWD)/enforcer --enforce "$$@"' >> $@
 	echo '    ;;' >> $@
 	echo '  *)' >> $@
 	echo '    echo "Usage: $$0 [--trace|--enforce] args..."' >> $@

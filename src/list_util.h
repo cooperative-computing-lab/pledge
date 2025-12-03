@@ -11,7 +11,7 @@
 
 #include "list.h"
 
-#define ACCESS_COUNT 7
+#define ACCESS_COUNT 10
 
 #define UNKOWN_ACCESS 0
 #define READ_ACCESS 1
@@ -21,6 +21,8 @@
 #define DELETE_ACCESS 16
 #define LIST_ACCESS 32
 #define ERROR_ACCESS 64
+#define MMAP_ACCESS 128
+#define EXEC_ACCESS 256
 
 // In a text file Read and Write as true get dumped as +
 // THOUGHT: If we were to add a metadata flag, would open be a metadata flag
@@ -54,6 +56,10 @@ struct path_access {
 	bool list;
 	/// Flag for an error when accessing the path
 	bool error;
+	/// Flag for mmap access
+	bool mmap;
+	/// Flag for exec access
+	bool exec;
 };
 
 char *rel2abspath(char *abs_p, char *rel_p, size_t size);

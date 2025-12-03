@@ -129,7 +129,8 @@ def parse_strace_output(strace_lines):
     exec_re = re.compile(r'execve\("([^"]+)", .*= *(?:-?\d+)')
     # 1962296 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f3e278aa710) = 1962358
 
-    clone_re = re.compile(r'clone\(.*\) = ([0-9]+)')
+    clone_re = re.compile(r'clone\([^)]*\)\s*=\s*(\d+)')
+    clone_partial_re = re.compile(r'clone\(.*strace: Process (\d+) attached')
     
     newfstatat_wsize_re = re.compile(
         r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)= -?[0-9]'
@@ -152,8 +153,16 @@ def parse_strace_output(strace_lines):
         if 'pid' in pid:
             # pid = [pid 1234]
             pid = line.split(' ')[1].strip('[]')
-        if not pid.isdigit():
-            pid = 0  # for lines without PID prefix
+        elif not pid.isdigit():
+            # For lines without PID prefix, try to find the first PID in the line
+            pid_match = re.search(r'^(\d+)', line)
+            if pid_match:
+                pid = pid_match.group(1)
+            else:
+                pid = '0'  # fallback for lines without any PID
+        
+        # Ensure PID is always a string
+        pid = str(pid)
 
         file_tree = pid_tree[pid]  # for single process tracing
         
@@ -361,10 +370,25 @@ def parse_strace_output(strace_lines):
         # newpid = [pid x]
         # oldpid = 
 
+        # Handle clone system calls for tracking process parent-child relationships
         m = clone_re.search(line)
         if m:
             newpid = m.groups()[0]
-            pid_dependence_tree[pid].update({newpid: {}})
+            if pid not in pid_dependence_tree:
+                pid_dependence_tree[pid] = {}
+            pid_dependence_tree[pid][newpid] = {}
+            #print(f"Clone: parent {pid} -> child {newpid}")
+            continue
+            
+        # Handle partial clone calls with strace process attachment
+        m = clone_partial_re.search(line)
+        if m:
+            newpid = m.groups()[0]
+            if pid not in pid_dependence_tree:
+                pid_dependence_tree[pid] = {}
+            pid_dependence_tree[pid][newpid] = {}
+            #print(f"Clone (partial): parent {pid} -> child {newpid}")
+            continue
 
     
     strace_output.close()
@@ -372,6 +396,51 @@ def parse_strace_output(strace_lines):
     return pid_tree, pid_dependence_tree
 
 
+
+def find_parent_pid(pid, pid_dep):
+    """Find the parent PID of a given PID in the dependency tree."""
+    for parent, children in pid_dep.items():
+        if pid in children:
+            return parent
+    return None
+
+def build_process_tree(pid_dep):
+    """Build a hierarchical process tree from the dependency information."""
+    # Find root processes (those that don't appear as children)
+    all_children = set()
+    for children in pid_dep.values():
+        all_children.update(children.keys())
+    
+    roots = [pid for pid in pid_dep.keys() if pid not in all_children]
+    
+    def build_subtree(pid, level=0):
+        tree = [(pid, level)]
+        if pid in pid_dep:
+            for child in sorted(pid_dep[pid].keys(), key=lambda x: int(x) if str(x).isdigit() else 0):
+                tree.extend(build_subtree(child, level + 1))
+        return tree
+    
+    full_tree = []
+    for root in sorted(roots, key=lambda x: int(x) if str(x).isdigit() else 0):
+        full_tree.extend(build_subtree(root))
+    
+    return full_tree
+
+def print_process_tree(pid_tree, pid_dep):
+    """Print a visual representation of the process tree."""
+    if not pid_dep:
+        return
+        
+    print("\n#Process Tree:")
+    process_tree = build_process_tree(pid_dep)
+    
+    for pid, level in process_tree:
+        if pid in pid_tree and pid_tree[pid]:  # Only show processes that accessed files
+            indent = "  " * level
+            if level == 0:
+                print(f"{indent}├─ PID {pid} (root)")
+            else:
+                print(f"{indent}├─ PID {pid} (child)")
 
 def print_file_tree(pid_tree, pid_dep, no_pid=False):
 
@@ -418,7 +487,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
         pid_tree = { '0': merged_tree }
 
     # if there is no exec in a pid merge it with the parent
-    else:
+    if False:  
         pids_to_remove = []
         for pid in pid_tree:
             file_tree = pid_tree[pid]
@@ -459,7 +528,11 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
 
  
     # Build a directory tree: {dirpath: {filename: node}}
-    print("Access       <Directory>    Count")
+    # First show the process tree if we have multiple processes
+    if len(pid_tree) > 1 and not no_pid:
+        print_process_tree(pid_tree, pid_dep)
+    
+    print("\nAccess       <Directory>    Count")
     for pid in pid_tree:
         
         file_tree = pid_tree[pid]
@@ -474,7 +547,11 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
             continue
 
 
-        print(f"\nProcess ID: {pid}")
+        parent_pid = find_parent_pid(pid, pid_dep)
+        if parent_pid:
+            print(f"\n#Process ID: {pid} (child of {parent_pid})")
+        else:
+            print(f"\n#Process ID: {pid} (root process)")
         dir_tree = defaultdict(dict)
 
         # keep track of number of specific filenames accessed to identify searching patterns
@@ -537,7 +614,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{root}/')]
                     if in_this_subpath:
-                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -573,7 +650,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{mid}/')]
                     if in_this_subpath:
-                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
 
                 # Remove printed paths from tree
                 for dirpath in mid_paths.keys():
@@ -685,18 +762,18 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False):
                 if 'X' in access_chars and exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
                     if in_this_subpath:
-                        print(f"\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
 
         search_files = []
         for file, count in files_repeat.items():
             if count > 3:
                 search_files.append(file)
         if search_files:
-            print("Searching for: " + ', '.join(search_files))
+            print("#Searching for: " + ', '.join(search_files))
 
         if rw_mismatch_files:
-            print("Read/Write permission mismatches (requested but not performed):")
-            print(''.join(rw_mismatch_files))
+            print("#Read/Write permission mismatches (requested but not performed):")
+            print('#' + ''.join(rw_mismatch_files))
 
 def main():
 

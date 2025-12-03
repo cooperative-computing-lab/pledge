@@ -31,6 +31,9 @@
 #define PRINT_RESET_TERM_C()
 #endif
 
+int num_stats_fetched = 0;
+
+
 // TODO: the enforcer should not stop wrong paths...?
 
 // TODO: Enforcer should not write to stderr no more
@@ -57,11 +60,15 @@ void flag2letter(struct path_access *r, char *buff, size_t buff_len)
 		strncat(buff, "L", buff_len);
 	if (r->error)
 		strncat(buff, "E", buff_len);
+	if (r->mmap)
+		strncat(buff, "P", buff_len);
+	if (r->exec)
+		strncat(buff, "X", buff_len);
 }
 
 // TODO: The bit flags need to be changed to a typedef so we can
 // change the bit count whenever
-uint8_t letter2bitflag(char x)
+uint16_t letter2bitflag(char x)
 {
 	switch (x) {
 	case 'M':
@@ -84,6 +91,15 @@ uint8_t letter2bitflag(char x)
 		break;
 	case 'E':
 		return ERROR_ACCESS;
+		break;
+	case 'P':
+		return MMAP_ACCESS;
+		break;
+	case 'S':
+		return MMAP_ACCESS;
+		break;
+	case 'X':
+		return EXEC_ACCESS;
 		break;
 	default:
 		return UNKOWN_ACCESS;
@@ -191,9 +207,17 @@ init_enforce()
 		// Save position for lookahead
 		fgetpos(contract_f, &pos);
 
+		if (c == '#') {
+			// Comment line, skip until newline
+			while ((c = fgetc(contract_f)) != '\n')
+				;
+			continue;
+		}
+
 		// If we were to use delimiters (<>) then we could find clever ways to get around
 		// user mistakes.
 		l = fgetc(contract_f);
+
 		if (!got_perm) {
 			// We are working based off of the assumption the first char is always
 			// a permission or a letter.
@@ -207,6 +231,12 @@ init_enforce()
 				// Skip characters until we get the marker for path
 				// IMPROVEMENT: How to handle erroneous whitespace at the beginning
 				// while trying to get perms
+				if (l == '#') {
+				// Comment line, skip until newline
+				while ((c = fgetc(contract_f)) != '\n')
+					;
+				l = fgetc(contract_f);
+				}
 				while ((c = fgetc(contract_f) != '<'))
 					;
 				continue;
@@ -248,6 +278,7 @@ __attribute__((destructor)) void
 deinit_enforce()
 {
 	// Bye
+	fprintf(stderr, "number of cached stats fetched: %d\n", num_stats_fetched);
 	destroy_contract_list(contract_list_root);
 	list_delete(contract_list_root);
 }
@@ -382,6 +413,28 @@ bool enforce(const char *pathname,
 		PRINT_GREEN();
 		fprintf(stderr,
 				"[ALLOWED GETDENTS]: "
+				"Path [%s] with permission [%s] is not in violation of the "
+				"contract.\n",
+				a->pathname,
+				a_perm);
+		PRINT_RESET_TERM_C();
+		return true;
+	} else if (a->mmap && (keys & MMAP_ACCESS)) {
+		flag2letter(a, a_perm, a_perm_len);
+		PRINT_GREEN();
+		fprintf(stderr,
+				"[ALLOWED MMAP]: "
+				"Path [%s] with permission [%s] is not in violation of the "
+				"contract.\n",
+				a->pathname,
+				a_perm);
+		PRINT_RESET_TERM_C();
+		return true;
+	} else if (a->exec && (keys & EXEC_ACCESS)) {
+		flag2letter(a, a_perm, a_perm_len);
+		PRINT_GREEN();
+		fprintf(stderr,
+				"[ALLOWED EXEC]: "
 				"Path [%s] with permission [%s] is not in violation of the "
 				"contract.\n",
 				a->pathname,
@@ -541,6 +594,40 @@ fopen(const char *restrict pathname,
 	return real_fopen(pathname, mode);
 }
 
+// data structure to cache stat results to return on subsequent calls
+struct stat_cache {
+	char *path;
+	struct stat statbuf;
+	bool valid;
+	void *result;
+};
+
+struct stat_cache cached_stats[65536];
+int stat_cache_index = 0;
+
+struct stat_cache *get_stat_cache(const char *path)
+{
+
+	for ( int i = 0; i < stat_cache_index; i++)
+	{
+		if (strcmp(cached_stats[i].path, path) == 0){
+			return &cached_stats[i];
+		}
+	}
+
+	// add a new stat to the cache
+	if (stat_cache_index < 1024) {
+		cached_stats[stat_cache_index].path = strdup(path);
+		cached_stats[stat_cache_index].valid = false;
+		stat_cache_index++;
+	} else {
+		fprintf(stderr, "Stat cache full, not caching new stats\n");
+		return NULL; // cache full
+	}
+
+	return NULL;
+}
+
 int stat(const char *restrict pathname,
 		struct stat *restrict statbuf)
 {
@@ -564,10 +651,29 @@ int stat(const char *restrict pathname,
 	}
 	enforce(full_path, METADATA_ACCESS);
 
+	// return cached stat if available
+	if(get_stat_cache(full_path) != NULL){
+		struct stat_cache *cached_stat = get_stat_cache(full_path);
+		if(cached_stat->valid){
+			memcpy(statbuf, &cached_stat->statbuf, sizeof(struct stat));
+			num_stats_fetched++;
+			return 0; // success
+		}
+	}
+
 	int (*real_stat)(const char *restrict pathname, struct stat *restrict statbuf);
 	real_stat = dlsym(RTLD_NEXT, "stat");
 
-	return real_stat(pathname, statbuf);
+	int result = real_stat(pathname, statbuf);
+	if (result == 0) {
+		// Cache the result
+		struct stat_cache *cache = get_stat_cache(full_path);
+		if (cache != NULL) {
+			memcpy(&cache->statbuf, statbuf, sizeof(struct stat));
+			cache->valid = true;
+		}
+	} 
+	return result;
 }
 
 int fstatat(int dirfd,
@@ -622,10 +728,29 @@ int fstatat(int dirfd,
 		enforce(solved_path, METADATA_ACCESS);
 	}
 
+	// return cached stat if available
+	if(get_stat_cache(full_path) != NULL){
+		struct stat_cache *cached_stat = get_stat_cache(full_path);
+		if(cached_stat->valid){
+			memcpy(statbuf, &cached_stat->statbuf, sizeof(struct stat));
+			num_stats_fetched++;
+			return 0; // success
+		}
+	}
+
 	int (*real_fstatat)(int dirfd, const char *restrict pathname, struct stat *restrict statbuf, int flags);
 	real_fstatat = dlsym(RTLD_NEXT, "fstatat");
 
-	return real_fstatat(dirfd, pathname, statbuf, flags);
+	int result = real_fstatat(dirfd, pathname, statbuf, flags);
+	if (result == 0) {
+		// Cache the result
+		struct stat_cache *cache = get_stat_cache(full_path);
+		if (cache != NULL) {
+			memcpy(&cache->statbuf, statbuf, sizeof(struct stat));
+			cache->valid = true;
+		}
+	}
+	return result;
 }
 
 // TODO: execve?
@@ -634,21 +759,26 @@ int fstatat(int dirfd,
 
 int remove(const char *pathname)
 {
-	PRINT_YELLOW();
-	fprintf(stderr, "[UNLINK]: Caught path [%s]\n", pathname);
-	PRINT_RESET_TERM_C();
-
-	char full_path[MAXPATHLEN];
-	if (rel2abspath(full_path, pathname, MAXPATHLEN) == NULL) {
-		// Couldn't convert so we fallback to pathname
-		strncpy(full_path, pathname, MAXPATHLEN);
-	}
-	if (enforce(full_path, DELETE_ACCESS) != true) {
-		return -1;
-	}
+	// ignore remove for now
 	int (*real_remove)(const char *pathname);
 	real_remove = dlsym(RTLD_NEXT, "remove");
 	return real_remove(pathname);
+
+	// PRINT_YELLOW();
+	// fprintf(stderr, "[UNLINK]: Caught path [%s]\n", pathname);
+	// PRINT_RESET_TERM_C();
+
+	// char full_path[MAXPATHLEN];
+	// if (rel2abspath(full_path, pathname, MAXPATHLEN) == NULL) {
+	// 	// Couldn't convert so we fallback to pathname
+	// 	strncpy(full_path, pathname, MAXPATHLEN);
+	// }
+	// if (enforce(full_path, DELETE_ACCESS) != true) {
+	// 	return -1;
+	// }
+	// int (*real_remove)(const char *pathname);
+	// real_remove = dlsym(RTLD_NEXT, "remove");
+	// return real_remove(pathname);
 }
 
 ssize_t getdents64(int fd, void *dirp, size_t count)

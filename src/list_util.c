@@ -67,6 +67,8 @@ void new_path_access_node(struct list *c,
 	t->delete = (access_fl & DELETE_ACCESS) ? true : false;
 	t->list = (access_fl & LIST_ACCESS) ? true : false;
 	t->error = (access_fl & ERROR_ACCESS) ? true : false;
+	t->mmap = (access_fl & MMAP_ACCESS) ? true : false;
+	t->exec = (access_fl & EXEC_ACCESS) ? true : false;
 	t->count = 1;
 
 	/// This string gotta be manually removed
