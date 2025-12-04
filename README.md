@@ -20,6 +20,18 @@ pledge --trace ./a.out
 
 It should create a file named `(executable name).contract`, as well as a copy of the strace output named `strace_output.log`
 
+You may also generate a contract for a program using an existing strace output. Some versions of strace may be incompatible. The supported strace version is 6.12. 
+
+`strace -f -y` is the minimum specification required but may generate a very large file.
+
+`strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone` will record only the necessary information. 
+
+The contract may be generated from the existing strace output like so:
+
+```sh
+pledge --trace -f strace_output.log
+```
+
 The contract file will look something like the text below. 
 
 ```
