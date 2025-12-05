@@ -638,7 +638,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{root}/')]
                     if in_this_subpath:
-                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -680,7 +680,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{mid}/')]
                     if in_this_subpath:
-                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
 
                 # Remove printed paths from tree
                 for dirpath in mid_paths.keys():
@@ -796,7 +796,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 if 'X' in access_chars and exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
                     if in_this_subpath:
-                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
         search_files = []
         for file, count in files_repeat.items():
             if count > 3:
@@ -806,8 +806,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
             print(f"{indent}#Searching for: " + ', '.join(search_files))
 
         if rw_mismatch_files:
-            print(f"{indent}#Read/Write permission mismatches (requested but not performed):")
-            print(f"{indent}#" + ''.join(rw_mismatch_files))
+            print(f"{indent*2}#Read/Write permission mismatches (requested but not performed):")
+            print(f"{indent*2}#" + ''.join(rw_mismatch_files))
 
 
 def print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=0):
