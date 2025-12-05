@@ -1,82 +1,91 @@
 # Pledge
 
-Tool to track what a program does to the filesystem.
+Pledge is a utility for understanding and tuning applications.
 
 ## Building
 
-We use `Make` as our build system, simply do:
+Clone the pledge repository and run `make`
 
-```sh
-make
-```
+## Usage
 
-And you're good to go.
-
-### Colors
-
-If you wish to have colored output, then you can run `make` like this instead:
-
-```sh
-make DEFS=-DCOLOR_ENFORCING
-```
-
-Do keep in mind that pipes sometimes have trouble dealing with colors.
-
-## Using
-
-Pledge has 2 tools inside of it, the tracer and the enforcer.
+Pledge consists of two components, the tracer and the enforcer.
 
 ### Tracer
 
-The tracer is ran like this:
+To generate a trace/contract for a program, execute your application within the context of the pledge tracer like so:
 
 ```sh
-pledge trace cat sample.c
+pledge --trace ./a.out
 ```
 
-It's output should be something like this:
+It should create a file named `(executable name).contract`, as well as a copy of the strace output named `strace_output.log`
+
+You may also generate a contract for a program using an existing strace output. Some versions of strace may be incompatible. The supported strace version is 6.12. 
+
+`strace -f -y` is the minimum specification required but may generate a very large file.
+
+`strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone` will record only the necessary information. 
+
+The contract may be generated from the existing strace output like so:
+
+```sh
+pledge --trace -f strace_output.log
+```
+
+The contract file will look something like the text below. 
 
 ```
-Tracer [cat.sample.c]: Strace log generated -> cat.sample.c.tracer.log
-Tracer [cat.sample.c]: Contract generated   -> cat.sample.c.contract
+#Process Tree:
+├─ PID 0 (root) [./batch_wrf.sh]
+  ├─ PID 2082651 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/link_grib.csh]
+    ├─ PID 2082652 (child) [unknown]
+    ├─ PID 2082653 (child) [/usr/bin/rm]
+    ├─ PID 2082654 (child) [/usr/bin/ln]
+    ├─ PID 2082655 (child) [/usr/bin/ln]
+    ├─ PID 2082656 (child) [/usr/bin/ln]
+    ├─ PID 2082657 (child) [/usr/bin/ln]
+    ├─ PID 2082658 (child) [/usr/bin/ln]
+    ├─ PID 2082659 (child) [/usr/bin/ln]
+    ├─ PID 2082660 (child) [/usr/bin/ln]
+    ├─ PID 2082661 (child) [/usr/bin/ln]
+    ├─ PID 2082662 (child) [/usr/bin/ln]
+  ├─ PID 2082664 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/ungrib.exe]
+  ├─ PID 2082702 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/geogrid.exe]
+  ├─ PID 2082763 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/metgrid.exe]
+  ├─ PID 2082794 (child) [/usr/bin/ln]
+  ├─ PID 2082795 (child) [/software/w/wrf/4.7/WRF/WRFV4.7.0/run/real.exe]
+  ├─ PID 2082820 (child) [/software/w/wrf/4.7/WRF/WRFV4.7.0/run/wrf.exe]
+├─ PID 2082710 (root) [unknown]
+├─ PID 2082711 (root) [unknown]
+├─ PID 2082767 (root) [unknown]
+├─ PID 2082768 (root) [unknown]
+├─ PID 2082799 (root) [unknown]
+├─ PID 2082800 (root) [unknown]
+├─ PID 2082821 (root) [unknown]
+
+Access       <Directory>    Count
+
+#Process ID: 0 (root process)
+E </afs/crc.nd.edu/user/c/username/miniconda3> (2 files) [enoent: 4]
+EM </afs> (13 files) [enoent: 12, stat: 1]
+EM </opt> (65 files) [enoent: 59, stat: 6]
+EM </software> (34 files) [enoent: 27, stat: 55]
+RM </users> (7 files) [read: 11, stat: 9]
+#Searching for: x86-64-v3, x86-64-v2, x86_64, haswell, tls, ln
+#Read/Write permission mismatches (requested but not performed):
+#/dev/tty
+
+...
+
 ```
 
-The most important file here is the contract file, if we `cat` it we get:
-
-```
-Access       <Path>         Count
-R            </usr/bin/cat> 1
-M            </usr/lib/debug/libc.so.6> 1
-M            </usr/lib/debug/> 1
-MR           </etc/ld.so.cache> 2
-MRW          </usr/lib/aarch64-linux-gnu/libc.so.6> 4
-MR           </usr/lib/locale/locale-archive> 2
-MR           </etc/locale.alias> 3
-ME           </usr/lib/locale/C.UTF-8/LC_IDENTIFICATION> 1
-MR           </usr/lib/locale/C.utf8/LC_IDENTIFICATION> 2
-MR           </usr/lib/aarch64-linux-gnu/gconv/gconv-modules.cache> 2
-MR           </usr/lib/locale/C.utf8/LC_MEASUREMENT> 2
-MR           </usr/lib/locale/C.utf8/LC_TELEPHONE> 2
-MR           </usr/lib/locale/C.utf8/LC_ADDRESS> 2
-MR           </usr/lib/locale/C.utf8/LC_NAME> 2
-MR           </usr/lib/locale/C.utf8/LC_PAPER> 2
-M            </usr/lib/locale/C.utf8/LC_MESSAGES> 1
-MR           </usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES> 2
-MR           </usr/lib/locale/C.utf8/LC_MONETARY> 2
-MR           </usr/lib/locale/C.utf8/LC_COLLATE> 2
-MR           </usr/lib/locale/C.utf8/LC_TIME> 2
-MR           </usr/lib/locale/C.utf8/LC_NUMERIC> 2
-MR           </usr/lib/locale/C.utf8/LC_CTYPE> 2
-MR           </home/user/dummy/sample.c> 3
-W            </dev/pts/0> 1
-
-```
+A process tree describes the hierarchy of the program structure. Below the process tree there is an entry for each process describing the I/O behavior. 
 
 ### Enforcer
 
-Now that we have a contract we can use the enforcer.
+With the contract generated we may now use it in combination with the enforcer on subsequent executions. 
 We first have to set the environment variable:<br>
-`export CONTRACT=./cat.sample.c.contract`<br>
+`export CONTRACT=./contract_name`<br>
 We use `LD_PRELOAD`, however, `PLEDGE` temporarily writes an `.so` called `minienforcer.so` and appends its path to the `LD_PRELOAD` environment variable, so the user does not have to set it.<br>
 We can run our command with:<br>
 `pledge enforce cat sample.c`<br>
@@ -91,13 +100,7 @@ READING: caught path [/proc/self/fd/3] with link to [/home/user/dummy/sample.c]
 ALLOWED: Path [/home/user/dummy/sample.c] with permission [R] is not in violation of the contract.
 WRITING: caught path [/proc/self/fd/1] with link to [/dev/pts/0]
 WHITELISTED: Path [/dev/pts/0] is whitelisted internally.
-#include <stdio.h>
-
-void
-main()
-{
-printf("Meow!");
-}
 READING: caught path [/proc/self/fd/3] with link to [/home/user/dummy/sample.c]
 ALLOWED: Path [/home/user/dummy/sample.c] with permission [R] is not in violation of the contract.
 ```
+
