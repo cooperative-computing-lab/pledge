@@ -20,6 +20,8 @@ access_legend = {
 }
 
 cwd = None
+indent_block = "    "
+
 
 class FileAccessNode:
     def __init__(self, filename):
@@ -29,6 +31,7 @@ class FileAccessNode:
         self.write_offsets = []
         self.mmap_access = []
         self.getdents = False
+        self.num_accesses = 0
         self.total_bytes_read = 0 
         self.st_size = 0
         self.num_opens = 0
@@ -47,6 +50,7 @@ class FileAccessNode:
 
     def add_access(self, mode, offset=None, length=None):
         self.modes.add(mode)
+        self.num_accesses += 1
         if mode == 'read':
             if offset is not None:
                 self.read_offsets.append((offset, length))
@@ -402,14 +406,12 @@ def parse_strace_output(strace_lines):
 
 
 def find_parent_pid(pid, pid_dep):
-    """Find the parent PID of a given PID in the dependency tree."""
     for parent, children in pid_dep.items():
         if pid in children:
             return parent
     return None
 
 def build_process_tree(pid_dep):
-    """Build a hierarchical process tree from the dependency information."""
     # Find root processes (those that don't appear as children)
     all_children = set()
     for children in pid_dep.values():
@@ -417,6 +419,7 @@ def build_process_tree(pid_dep):
     
     roots = [pid for pid in pid_dep.keys() if pid not in all_children]
     
+    # may reach max recursion depth
     def build_subtree(pid, level=0):
         tree = [(pid, level)]
         if pid in pid_dep:
@@ -440,7 +443,7 @@ def print_process_tree(pid_tree, pid_dep):
     
     for pid, level in process_tree:
         if pid in pid_tree and pid_tree[pid]:  # Only show processes that accessed files
-            indent = "  " * level
+            indent = indent_block * level
             # print the executable if available
             executable = []
             for filename, node in pid_tree[pid].items():
@@ -448,10 +451,12 @@ def print_process_tree(pid_tree, pid_dep):
                     executable.append(filename)
             if level == 0:
                 print(f"{indent}├─ PID {pid} (root) [{', '.join(executable) if executable else 'unknown'}]")
+                print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
             else:
                 print(f"{indent}├─ PID {pid} (child) [{', '.join(executable) if executable else 'unknown'}]")
+                print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
 
-def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
+def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=0):
 
     #sort pid dep tree
     # Reorganize pid_dep to handle subprocess relationships
@@ -536,12 +541,12 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
             pid_tree.pop(pid)
 
  
-    # Build a directory tree: {dirpath: {filename: node}}
-    # First show the process tree if we have multiple processes
-    if len(pid_tree) > 1 and not no_pid:
-        print_process_tree(pid_tree, pid_dep)
+    # # Build a directory tree: {dirpath: {filename: node}}
+    # # First show the process tree if we have multiple processes
+    # if len(pid_tree) > 1 and not no_pid:
+    #     print_process_tree(pid_tree, pid_dep)
     
-    print("\nAccess       <Directory>    Count")
+    #print(f"{' ' * indent_level}Access       <Directory>    Count")
     for pid in pid_tree:
         
         file_tree = pid_tree[pid]
@@ -557,10 +562,10 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
 
 
         parent_pid = find_parent_pid(pid, pid_dep)
-        if parent_pid:
-            print(f"\n#Process ID: {pid} (child of {parent_pid})")
-        else:
-            print(f"\n#Process ID: {pid} (root process)")
+        # if parent_pid:
+        #     print(f"\n#Process ID: {pid} (child of {parent_pid})")
+        # else:
+        #     print(f"\n#Process ID: {pid} (root process)")
         dir_tree = defaultdict(dict)
 
         # keep track of number of specific filenames accessed to identify searching patterns
@@ -615,18 +620,25 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
                     mode_counts['enoent'] += node.num_enoent
                     mode_counts['mmapsh'] += node.num_mmapsh
                     mode_counts['exec'] += node.num_exec
+
                     if node.num_exec > 0:
                         exec_files.append(fname)
                     for access_pattern in node.access_pattern():
                         access_patterns[access_pattern] += 1
                 dir_tree.pop(dirpath)  # Remove printed paths from tree
             if total_files > 0:
+                # if there are only enoent accesses, skip
+                if all(value == 0 for mode, value in mode_counts.items() if mode != 'enoent'):
+                    continue
+
                 mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
-                print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} </{root}> ({total_files} files) [{mode_summary}]")
+                indent = indent_block * indent_level
+                access_chars = ''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)
+                print(f"{indent}{access_chars} </{root}> ({total_files} files) [{mode_summary}]")
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{root}/')]
                     if in_this_subpath:
-                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -657,12 +669,18 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
                             exec_files.append(fname)
                         for access_pattern in node.access_pattern():
                             access_patterns[access_pattern] += 1
+
+                # if there are only enoent accesses, skip
+                if all(value == 0 for mode, value in mode_counts.items() if mode != 'enoent'):
+                    continue
                 mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
-                print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} <{mid_abs}> ({total_files} files) [{mode_summary}]")
+                indent = indent_block * indent_level
+                access_chars = ''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)
+                print(f"{indent}{access_chars} <{mid_abs}> ({total_files} files) [{mode_summary}]")
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'/{mid}/')]
                     if in_this_subpath:
-                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
+                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
 
                 # Remove printed paths from tree
                 for dirpath in mid_paths.keys():
@@ -767,25 +785,37 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True):
             mode_counts = group_data['mode_counts']
 
             if total_files > 0:
+                # if there are only enoent accesses, skip
+                if all(value == 0 for mode, value in mode_counts.items() if mode != 'enoent'):
+                    continue
                 mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0)
                 dir_summary = f"<{path}>"
                 access_chars = ''.join(access_legend[mode] for mode, count in sorted(mode_counts.items()) if count > 0)
-                print(f"{access_chars} {dir_summary} ({total_files} files) [{mode_summary}]")
+                indent = "  " * indent_level
+                print(f"{indent}{access_chars} {dir_summary} ({total_files} files) [{mode_summary}]")
                 if 'X' in access_chars and exec_files:
                     in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
                     if in_this_subpath:
-                        print(f"#\tExecutables: {', '.join(in_this_subpath)}")
-
+                        print(f"{indent}#\tExecutables: {', '.join(in_this_subpath)}")
         search_files = []
         for file, count in files_repeat.items():
             if count > 3:
                 search_files.append(file)
         if search_files:
-            print("#Searching for: " + ', '.join(search_files))
+            indent = "  " * indent_level
+            print(f"{indent}#Searching for: " + ', '.join(search_files))
 
         if rw_mismatch_files:
-            print("#Read/Write permission mismatches (requested but not performed):")
-            print('#' + ''.join(rw_mismatch_files))
+            print(f"{indent}#Read/Write permission mismatches (requested but not performed):")
+            print(f"{indent}#" + ''.join(rw_mismatch_files))
+
+
+def print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=0):
+    if pid not in pid_tree:
+        print(f"No data for PID {pid}")
+        return
+    single_pid_tree = {pid: pid_tree[pid]}
+    print_file_tree(single_pid_tree, pid_dep, no_pid=no_pid, skip_base_dirs=skip_base_dirs, indent_level=indent_level)
 
 def main():
 
@@ -805,7 +835,8 @@ def main():
         output_file = args.strace_file + '.contract'
         with open(output_file, 'w+') as f:
             sys.stdout = f
-            print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
+            #print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
+            print_process_tree(pid_tree, pid_dep)
             sys.stdout = sys.__stdout__
     elif args.target:
         proc = run_strace(args.target)
@@ -814,7 +845,8 @@ def main():
             output_file = str(args.target[0].strip('./')) + '.contract'
             with open(output_file, 'w+') as f:
                 sys.stdout = f
-                print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
+                #print_file_tree(pid_tree, pid_dep, no_pid=args.no_pid)
+                print_process_tree(pid_tree, pid_dep)
                 sys.stdout = sys.__stdout__
         except KeyboardInterrupt:
             proc.terminate()
