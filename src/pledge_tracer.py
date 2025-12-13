@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 import argparse
 import os
+import fnmatch
 
 from queue import Queue
 
@@ -22,6 +23,63 @@ access_legend = {
 cwd = None
 indent_block = "    "
 
+# given a list of filenames, return a glob pattern that matches all of them
+def inverse_glob(names, force_single_asterisk=None):
+    glob_strings = []
+    
+    # group common substrings
+    match_groups = []
+    while len(names):
+        n = names.pop(0)
+        n_matches = [n]
+        for match in names.copy():
+            common = ''
+            for i, c in enumerate(n):
+                if i < len(match) and c == match[i]:
+                    common += c
+                else:
+                    break
+            if common:
+                n_matches.append(match)
+                names.remove(match)
+        match_groups.append(n_matches)
+
+    for names in match_groups:
+        def adjust_name(pp, diff):
+            if len(pp) == 2:
+                return pp[0][:-diff] + '?'*(diff+1) + '.' + pp[1]
+            else:
+                return pp[0][:-diff] + '?' * (diff + 1)
+
+        glob_string = names.pop(0)
+        
+        # if not len(names):
+        #     glob_strings.append(glob_string)
+        #     continue
+
+        while len(names):
+            f1 = glob_string
+            f2 = names.pop(0)
+            l1 = len(f1); l2 = len(f2)
+            if l1 > l2:
+                f2 = adjust_name(f2.split('.'), l1-l2)
+            elif l2 > l1:
+                f1 = adjust_name(f1.split('.'), l2-l1)
+
+            result = ['?' for n in range(len(f1))]
+            for i, c in enumerate(f1):
+                if c == f2[i]:
+                    result[i] = c
+
+            result = ''.join(result)
+            
+            if fnmatch.fnmatch(f2, glob_string):
+                continue
+            
+            glob_string = re.sub(r'\?{2,}', '*', result)
+            #glob_string = re.sub(r'\*.+\*', '*', glob_string)
+        glob_strings.append(glob_string)
+    return glob_strings
 
 class FileAccessNode:
     def __init__(self, filename):
@@ -732,7 +790,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
         })
 
        
-
+        write_files = []
+        exec_files = []
 
         # find a description level which isolates access modes per root directory
         for dirpath, files in dir_tree.items():
@@ -760,16 +819,19 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         for _, node in path_files_data.items():
                             #if node.num_opens > 0: path_modes['open'] += node.num_opens
                             if node.num_reads > 0: path_modes['read'] += node.num_reads
-                            if node.num_writes > 0: path_modes['write'] += node.num_writes
+                            if node.num_writes > 0: 
+                                path_modes['write'] += node.num_writes
+                                write_files.append(node.filename) if node.filename not in write_files else None
                             if node.num_stats > 0: path_modes['stat'] += node.num_stats
                             if node.num_mmaps > 0: path_modes['mmap'] += node.num_mmaps
                             if node.num_getdents > 0: path_modes['getdents64'] += node.num_getdents
                             if node.num_creates > 0: path_modes['create'] += node.num_creates
                             if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
-                            if node.num_exec > 0: path_modes['exec'] += node.num_exec
-                            if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
-                            if node.num_exec > 0:
+                            if node.num_exec > 0: 
+                                path_modes['exec'] += node.num_exec
                                 exec_files.append(node.filename) if node.filename not in exec_files else None
+
+                            if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
 
                 # If we have ≤2 access modes at this level or we reached the full depth, group the paths here
                 if len([m for m,c in path_modes.items() if c > 0]) <= 2 or depth == len(parts):
@@ -797,6 +859,16 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                     in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
                     if in_this_subpath:
                         print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
+                if 'W' in access_chars and write_files:
+                    # get the base filename or the disjoint part of the path string
+                    in_this_subpath = [f.replace(f'{path}/', '') for f in write_files if f.startswith(f'{path}/')]
+                    if len(in_this_subpath) < 5:
+                        print(f"{indent*2}#\tWritable files: {', '.join(in_this_subpath)}")
+                    else:
+                        # reduce the number of files to a glob pattern
+                        glob_string = inverse_glob(in_this_subpath.copy())
+                        print(f"{indent*2}#\tWritable files (glob): {glob_string}")
+
         search_files = []
         for file, count in files_repeat.items():
             if count > 3:
