@@ -52,10 +52,6 @@ def inverse_glob(names, force_single_asterisk=None):
                 return pp[0][:-diff] + '?' * (diff + 1)
 
         glob_string = names.pop(0)
-        
-        # if not len(names):
-        #     glob_strings.append(glob_string)
-        #     continue
 
         while len(names):
             f1 = glob_string
@@ -68,6 +64,8 @@ def inverse_glob(names, force_single_asterisk=None):
 
             result = ['?' for n in range(len(f1))]
             for i, c in enumerate(f1):
+                if len(f2) <= i:
+                    break
                 if c == f2[i]:
                     result[i] = c
 
@@ -104,6 +102,7 @@ class FileAccessNode:
         self.num_exec = 0
         self.read_perm = False
         self.write_perm = False
+        self.exec_args = []
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -188,7 +187,7 @@ def parse_strace_output(strace_lines):
     getdents_re = re.compile(r'getdents64\((\d+),')
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
-    exec_re = re.compile(r'execve\("([^"]+)", .*= *(?:-?\d+)')
+    exec_re = re.compile(r'execve\("([^"]+)", \[([^\]]+)\].*= *(?:-?\d+)')
     # 1962296 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f3e278aa710) = 1962358
 
     clone_re = re.compile(r'clone\([^)]*\)\s*=\s*(\d+)')
@@ -424,6 +423,7 @@ def parse_strace_output(strace_lines):
         if m:
             #print("execve")
             filename = m.groups()[0]
+            args = list((p.strip('"') for p in m.groups()[1].split(', ')))
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
             
@@ -431,6 +431,8 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].add_access('enoent')
             else:
                 file_tree[filename].add_access('exec')
+
+            file_tree[filename].exec_args = args
             continue
 
         # newpid = [pid x]
@@ -791,6 +793,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
 
        
         write_files = []
+        read_files = []
         exec_files = []
 
         # find a description level which isolates access modes per root directory
@@ -818,7 +821,9 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         path_files += len(path_files_data)
                         for _, node in path_files_data.items():
                             #if node.num_opens > 0: path_modes['open'] += node.num_opens
-                            if node.num_reads > 0: path_modes['read'] += node.num_reads
+                            if node.num_reads > 0: 
+                                path_modes['read'] += node.num_reads
+                                read_files.append(node.filename) if node.filename not in read_files else None
                             if node.num_writes > 0: 
                                 path_modes['write'] += node.num_writes
                                 write_files.append(node.filename) if node.filename not in write_files else None
@@ -829,7 +834,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                             if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
                             if node.num_exec > 0: 
                                 path_modes['exec'] += node.num_exec
-                                exec_files.append(node.filename) if node.filename not in exec_files else None
+                                exec_files.append(node) if node not in exec_files else None
 
                             if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
 
@@ -856,18 +861,30 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 indent = "  " * indent_level
                 print(f"{indent}{access_chars} {dir_summary} ({total_files} files) [{mode_summary}]")
                 if 'X' in access_chars and exec_files:
-                    in_this_subpath = [f for f in exec_files if f.startswith(f'{path}/')]
+                    in_this_subpath = [f for f in exec_files if f.filename.startswith(f'{path}/')]
                     if in_this_subpath:
-                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
+                        arg_lists = [f.exec_args for f in in_this_subpath]
+                        for args in arg_lists:
+                            print(f"{indent*2}#\tExecutable: {' '.join(args)}")
                 if 'W' in access_chars and write_files:
                     # get the base filename or the disjoint part of the path string
                     in_this_subpath = [f.replace(f'{path}/', '') for f in write_files if f.startswith(f'{path}/')]
-                    if len(in_this_subpath) < 5:
+                    #if len(in_this_subpath) < 5:
+                    if True:
                         print(f"{indent*2}#\tWritable files: {', '.join(in_this_subpath)}")
                     else:
                         # reduce the number of files to a glob pattern
                         glob_string = inverse_glob(in_this_subpath.copy())
                         print(f"{indent*2}#\tWritable files (glob): {glob_string}")
+                if 'R' in access_chars and read_files:
+                    in_this_subpath = [f.replace(f'{path}/', '') for f in read_files if f.startswith(f'{path}/')]
+                    #if len(in_this_subpath) < 5:
+                    if True:
+                        print(f"{indent*2}#\tReadable files: {', '.join(in_this_subpath)}")
+                    else:
+                        # reduce the number of files to a glob pattern
+                        glob_string = inverse_glob(in_this_subpath.copy())
+                        print(f"{indent*2}#\tReadable files (glob): {glob_string}")
 
         search_files = []
         for file, count in files_repeat.items():
