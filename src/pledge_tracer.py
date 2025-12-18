@@ -131,6 +131,8 @@ class FileAccessNode:
             self.num_mmapsh += 1
         elif mode == 'exec':
             self.num_exec += 1
+        elif mode == 'create':
+            self.num_creates += 1
 
     def access_pattern(self):
         patterns = []
@@ -264,18 +266,18 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].add_access('enoent')
                 continue
             # Parse access mode from flags
-            if 'O_RDONLY' in flags:
+            if 'O_RDONLY' in line:
                 file_tree[filename].add_access('read')
                 file_tree[filename].read_perm = True
-            elif 'O_WRONLY' in flags:
+            elif 'O_WRONLY' in line:
                 file_tree[filename].add_access('write')
                 file_tree[filename].write_perm = True
-            elif 'O_RDWR' in flags:
+            elif 'O_RDWR' in line:
                 file_tree[filename].add_access('read')
                 file_tree[filename].add_access('write')
                 file_tree[filename].read_perm = True
                 file_tree[filename].write_perm = True
-            if 'O_CREAT' in flags:
+            if 'O_CREAT' in line:
                 file_tree[filename].add_access('create')
                     
             continue
@@ -516,6 +518,8 @@ def print_process_tree(pid_tree, pid_dep):
                 print(f"{indent}├─ PID {pid} (child) [{', '.join(executable) if executable else 'unknown'}]")
                 print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
 
+    print("CWD: ", cwd)
+
 def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=0):
 
     #sort pid dep tree
@@ -665,9 +669,6 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
             exec_files = []
 
             for dirpath, files in root_groups[root].items():
-                if skip_base_dirs:
-                    dir_tree.pop(dirpath)
-                    continue
                 total_files += len(files)
                 for fname, node in files.items():
                     #mode_counts['open'] += node.num_opens
@@ -679,14 +680,16 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                     mode_counts['create'] += node.num_creates
                     mode_counts['enoent'] += node.num_enoent
                     mode_counts['mmapsh'] += node.num_mmapsh
-                    mode_counts['exec'] += node.num_exec
-
                     if node.num_exec > 0:
-                        exec_files.append(fname)
+                        mode_counts['exec'] += node.num_exec
+                        exec_files.append(node)
                     for access_pattern in node.access_pattern():
                         access_patterns[access_pattern] += 1
                 dir_tree.pop(dirpath)  # Remove printed paths from tree
             if total_files > 0:
+                if skip_base_dirs and not exec_files:
+                    continue
+
                 # if there are only enoent accesses, skip
                 if all(value == 0 for mode, value in mode_counts.items() if mode != 'enoent'):
                     continue
@@ -696,9 +699,11 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 access_chars = ''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)
                 print(f"{indent}{access_chars} </{root}> ({total_files} files) [{mode_summary}]")
                 if exec_files:
-                    in_this_subpath = [f for f in exec_files if f.startswith(f'/{root}/')]
+                    in_this_subpath = [f for f in exec_files if f.filename.startswith(f'/{root}/')]
                     if in_this_subpath:
-                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
+                        arg_lists = [f.exec_args for f in in_this_subpath]
+                        for args in arg_lists:
+                            print(f"{indent*2}#\tExecutable: {' '.join(args)}")
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -724,9 +729,9 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         mode_counts['create'] += node.num_creates
                         mode_counts['enoent'] += node.num_enoent
                         mode_counts['mmapsh'] += node.num_mmapsh
-                        mode_counts['exec'] += node.num_exec
-                        if node.num_exec > 0:
-                            exec_files.append(fname)
+                        if node.num_exec > 0: 
+                                path_modes['exec'] += node.num_exec
+                                exec_files.append(node) if node not in exec_files else None
                         for access_pattern in node.access_pattern():
                             access_patterns[access_pattern] += 1
 
@@ -738,9 +743,11 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 access_chars = ''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)
                 print(f"{indent}{access_chars} <{mid_abs}> ({total_files} files) [{mode_summary}]")
                 if exec_files:
-                    in_this_subpath = [f for f in exec_files if f.startswith(f'/{mid}/')]
+                    in_this_subpath = [f for f in exec_files if f.filename.startswith(f'/{mid}/')]
                     if in_this_subpath:
-                        print(f"{indent*2}#\tExecutables: {', '.join(in_this_subpath)}")
+                        arg_lists = [f.exec_args for f in in_this_subpath]
+                        for args in arg_lists:
+                            print(f"{indent*2}#\tExecutable: {' '.join(args)}")
 
                 # Remove printed paths from tree
                 for dirpath in mid_paths.keys():
@@ -777,8 +784,6 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         parent_node.num_enoent += node.num_enoent
                         parent_node.num_mmapsh += node.num_mmapsh
                         parent_node.num_exec += node.num_exec
-                        if node.num_exec > 0:
-                            exec_files.append(fname)
                 # Remove local ref from tree
                 dir_tree.pop(dirpath)
 
@@ -817,29 +822,41 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 path_modes = defaultdict(int)
                 path_files = 0
                 for check_path, path_files_data in dir_tree.items():
-                    if check_path.startswith(current_path):
+                    if check_path == current_path:
                         path_files += len(path_files_data)
                         for _, node in path_files_data.items():
                             #if node.num_opens > 0: path_modes['open'] += node.num_opens
                             if node.num_reads > 0: 
                                 path_modes['read'] += node.num_reads
-                                read_files.append(node.filename) if node.filename not in read_files else None
-                            if node.num_writes > 0: 
+                                if node.filename not in read_files:
+                                    read_files.append(node.filename)
+                            if node.num_writes > 0:
                                 path_modes['write'] += node.num_writes
-                                write_files.append(node.filename) if node.filename not in write_files else None
-                            if node.num_stats > 0: path_modes['stat'] += node.num_stats
-                            if node.num_mmaps > 0: path_modes['mmap'] += node.num_mmaps
-                            if node.num_getdents > 0: path_modes['getdents64'] += node.num_getdents
-                            if node.num_creates > 0: path_modes['create'] += node.num_creates
-                            if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
+                                if node.filename not in write_files:
+                                    write_files.append(node.filename)
+                            if node.num_creates > 0:
+                                if node.filename + '*' not in write_files:
+                                    write_files.append(node.filename + '*')
+                            # if node.num_stats > 0: path_modes['stat'] += node.num_stats
+                            # if node.num_mmaps > 0: path_modes['mmap'] += node.num_mmaps
+                            # if node.num_getdents > 0: path_modes['getdents64'] += node.num_getdents
+                            # if node.num_creates > 0: path_modes['create'] += node.num_creates
+                            # if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
                             if node.num_exec > 0: 
                                 path_modes['exec'] += node.num_exec
                                 exec_files.append(node) if node not in exec_files else None
 
-                            if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
+                            #if node.num_mmapsh > 0: path_modes['mmapsh'] += node.num_mmapsh
 
                 # If we have ≤2 access modes at this level or we reached the full depth, group the paths here
-                if len([m for m,c in path_modes.items() if c > 0]) <= 2 or depth == len(parts):
+                # if len([m for m,c in path_modes.items() if c > 0]) <= 2 or depth == len(parts):
+                #     group = remaining_groups[current_path]
+                #     group['total_files'] = path_files
+                #     group['dirpaths'].add(current_path)
+                #     group['mode_counts'] = path_modes
+                #     break
+
+                if depth == len(parts):
                     group = remaining_groups[current_path]
                     group['total_files'] = path_files
                     group['dirpaths'].add(current_path)
@@ -868,7 +885,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                             print(f"{indent*2}#\tExecutable: {' '.join(args)}")
                 if 'W' in access_chars and write_files:
                     # get the base filename or the disjoint part of the path string
-                    in_this_subpath = [f.replace(f'{path}/', '') for f in write_files if f.startswith(f'{path}/')]
+                    in_this_subpath = [f.replace(f'{path}/', '') for f in write_files if f.startswith(f'{path}/') and f.count('/') == (path.count('/')+1)]
                     #if len(in_this_subpath) < 5:
                     if True:
                         print(f"{indent*2}#\tWritable files: {', '.join(in_this_subpath)}")
@@ -877,7 +894,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         glob_string = inverse_glob(in_this_subpath.copy())
                         print(f"{indent*2}#\tWritable files (glob): {glob_string}")
                 if 'R' in access_chars and read_files:
-                    in_this_subpath = [f.replace(f'{path}/', '') for f in read_files if f.startswith(f'{path}/')]
+                    # only show files in the same directory
+                    in_this_subpath = [f.replace(f'{path}/', '') for f in read_files if f.startswith(f'{path}/') and f.count('/') == (path.count('/')+1)]
                     #if len(in_this_subpath) < 5:
                     if True:
                         print(f"{indent*2}#\tReadable files: {', '.join(in_this_subpath)}")
@@ -886,17 +904,17 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         glob_string = inverse_glob(in_this_subpath.copy())
                         print(f"{indent*2}#\tReadable files (glob): {glob_string}")
 
-        search_files = []
-        for file, count in files_repeat.items():
-            if count > 3:
-                search_files.append(file)
-        if search_files:
-            indent = "  " * indent_level
-            print(f"{indent}#Searching for: " + ', '.join(search_files))
+        # search_files = []
+        # for file, count in files_repeat.items():
+        #     if count > 3:
+        #         search_files.append(file)
+        # if search_files:
+        #     indent = "  " * indent_level
+        #     print(f"{indent}#Searching for: " + ', '.join(search_files))
 
-        if rw_mismatch_files:
-            print(f"{indent*2}#Read/Write permission mismatches (requested but not performed):")
-            print(f"{indent*2}#" + ''.join(rw_mismatch_files))
+        # if rw_mismatch_files:
+        #     print(f"{indent*2}#Read/Write permission mismatches (requested but not performed):")
+        #     print(f"{indent*2}#" + ''.join(rw_mismatch_files))
 
 
 def print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=0):
