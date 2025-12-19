@@ -512,12 +512,13 @@ def print_process_tree(pid_tree, pid_dep):
             for filename, node in pid_tree[pid].items():
                 if node.num_exec > 0:
                     executable.append(filename)
-            if level == 0:
-                print(f"{indent}├─ PID {pid} (root) [{', '.join(executable) if executable else 'unknown'}]")
-                print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
-            else:
-                print(f"{indent}├─ PID {pid} (child) [{', '.join(executable) if executable else 'unknown'}]")
-                print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
+            if executable:
+                if level == 0:
+                    print(f"{indent}├─ PID {pid} (root) [{', '.join(executable)}]")
+                    print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
+                else:
+                    print(f"{indent}├─ PID {pid} (child) [{', '.join(executable)}]")
+                    print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
 
     print("CWD: ", cwd)
 
