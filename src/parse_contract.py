@@ -163,12 +163,24 @@ class ContractParser:
         cwd_groups = self.cwd.split('/')
         file_groups = file_path.split('/')
 
-        num_common = len(list(set(cwd_groups).intersection(set(file_groups))))
+        # a problem when CWD and a different path shares the same named subdirectories
+        # CWD = dir1/dir2/data/src
+        # file_path = dir3/dir2/data/src/image
+        # = /data/src/image ! wrong
+        # num common = 2
 
-        relative_parts = file_groups[num_common:]
-        file_path = '/'.join(relative_parts)
+        # this will not work for very long
+        if file_groups[0] in cwd_groups:
+            num_common = len(list(set(cwd_groups).intersection(set(file_groups))))
+            relative_parts = file_groups[num_common:]
+            file_path = '/'.join(relative_parts)
 
-        
+        # replace escape sequences and bad characters for makefiles
+
+        # pair for idempotence
+        file_path = file_path.replace(':', '\\:')
+        file_path = file_path.replace('\\\\:', '\\:')
+
         return file_path
     
     def _deduplicate_files(self, files: List[str]) -> List[str]:

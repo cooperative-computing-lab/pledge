@@ -260,7 +260,8 @@ def parse_strace_output(strace_lines):
                 cwd_re = re.search(r'AT_FDCWD<([^>]+)>', line)
                 if cwd_re:
                     global cwd
-                    cwd = cwd_re.group(1)
+                    if cwd == None:
+                        cwd = cwd_re.group(1)
 
             if 'ENOENT' in line:
                 file_tree[filename].add_access('enoent')
