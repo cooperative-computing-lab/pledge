@@ -102,7 +102,7 @@ class ContractParser:
                     process.readable_files.extend(files)
                     for file_path in files:
                         # This would create a circular dependency but might point out a flaw in the program
-                        if not file_path in process.file_outputs:
+                        if not file_path in process.file_outputs and not file_path.split('/')[-1] == process.executable.split('/')[-1]:
                             process.file_dependencies.add(file_path)
                 
             # Parse CWD line
