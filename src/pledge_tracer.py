@@ -168,7 +168,7 @@ def run_strace(pid_or_cmd):
 
     # strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone 
 
-    cmd = ['strace', '-f', '-y', '-v', '--trace=file,read,write,mmap,getdents64,lseek,clone'] + pid_or_cmd[0].split(' ')
+    cmd = ['strace', '-f', '-y', '-v', '-s 1024', '--trace=file,read,write,mmap,getdents64,lseek,clone'] + pid_or_cmd[0].split(' ')
     print("Running command:", ' '.join(pid_or_cmd))
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
     return proc
@@ -514,10 +514,10 @@ def print_process_tree(pid_tree, pid_dep):
                     executable.append(filename)
             if executable:
                 if level == 0:
-                    print(f"{indent}├─ PID {pid} (root) [{', '.join(executable)}]")
+                    print(f"{indent}├─ PID {pid} {level} [{', '.join(executable)}]")
                     print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
                 else:
-                    print(f"{indent}├─ PID {pid} (child) [{', '.join(executable)}]")
+                    print(f"{indent}├─ PID {pid} {level} [{', '.join(executable)}]")
                     print_file_tree_by_pid(pid, pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent_level=level+4)
 
     print("CWD: ", cwd)
@@ -767,6 +767,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 parent_files = dir_tree[abs_path]
                 for fname, node in files.items():
                     if fname not in parent_files:
+                        # join absolute path to each the new filename
+                        node.filename = os.path.abspath(os.path.join(cwd if cwd else '/', dirpath, fname))
                         parent_files[fname] = node
                     else:
                         # merge access modes and counts

@@ -13,6 +13,7 @@ import os
 class ProcessInfo:
     pid: str
     executable: Optional[str] = None
+    level: int = 0
     arguments: List[str] = field(default_factory=list)
     written_files: List[str] = field(default_factory=list)
     readable_files: List[str] = field(default_factory=list)
@@ -48,14 +49,15 @@ class ContractParser:
         current_directory = None
 
         for line in lines:
-            pid_match = re.search(r'[├└]─ PID (\d+) \([^)]+\) \[([^\]]+)\]', line)
+            pid_match = re.search(r'[├└]─ PID (\d+) (\d+) \[([^\]]+)\]', line)
             if pid_match:
-                pid, executable = pid_match.groups()
+                pid, level, executable = pid_match.groups()
                 current_pid = pid
                 
                 self.processes[pid] = ProcessInfo(
                     pid=pid,
-                    executable=executable
+                    executable=executable,
+                    level = int(level)
                 )
                 continue
             
@@ -315,8 +317,8 @@ class ContractParser:
         all_targets = []
 
         for pid, process in sorted_processes:
-            if int(pid) == 0:
-                continue  # Skip the initial process
+            if process.level != 1:
+                continue  # only invoke the top-level processes
             
             if process.file_outputs:
                 outputs = [self._normalize_path(f) for f in sorted(process.file_outputs)]
