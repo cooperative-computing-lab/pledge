@@ -7,7 +7,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, Set, Optional
 import os
-
+import json
 
 @dataclass
 class ProcessInfo:
@@ -176,6 +176,8 @@ class ContractParser:
             num_common = len(list(set(cwd_groups).intersection(set(file_groups))))
             relative_parts = file_groups[num_common:]
             file_path = '/'.join(relative_parts)
+            #file_path = './' + '/'.join(relative_parts)
+
 
         # replace escape sequences and bad characters for makefiles
 
@@ -303,13 +305,75 @@ class ContractParser:
         stages = self._find_execution_stages(dependencies)
         return stages
     
-    def analyze_execution_order(self) -> None:
+    def generate_makefile(self) -> None:
         
         dependencies = self._build_dependency_graph()
         
-        self._print_makefile_targets(dependencies)
+        target_lines = self._find_makefile_targets(dependencies)
+
+        for l in target_lines:
+            print(l)
+
+    def generate_jx_workflow(self) -> None:
+        
+        dependencies = self._build_dependency_graph()
+        
+        target_lines = self._find_makefile_targets(dependencies)
+
+        # there are three types of lines:
+        # 1. all: target1 target2 target3 ...
+        #       - this is the first line, listing all targets
+        # 2. target &: dep1 dep2 dep3 ...
+        #       - this is a target with dependencies  
+        # 3. \tcommand arg1 arg2 ...
+        #       - this is the command to run for the target
+
+        '''
+        {
+            "rules": [
+                        {
+                            "command" : "command arg1 arg2 ...",
+                            "inputs"  : [ "target1", "target2", ... ],
+                            "outputs" : [ "target3", "target4", ... ]
+                        }
+                    ]
+        }
+        '''
+
+        # make a json object for each makefile rule of the above format 
+
+        class JXRule:
+            def __init__(self):
+                self.command: Optional[str] = None
+                self.outputs = None
+                self.inputs = None
+
+        rules: List[JXRule] = []
+
+        for l in target_lines:
+            if l.startswith("all:"):
+                continue  # skip the all line
+            elif '&:' in l:
+                target_part, dep_part = l.split('&:', 1)
+                deps, command = dep_part.split('\n\t', 1)
+                target_names = target_part.strip().split()
+                target_names = [t for t in target_names if not '.tmp' in t]  # remove temporary files
+                dependencies = deps.strip().split()
+                dependencies = [d for d in dependencies if not '.tmp' in d]  # remove temporary files
+                rule = JXRule()
+                # fill add ./ to relative paths
+                rule.outputs = target_names
+                rule.inputs = dependencies
+                rule.command = command.strip()
+                rules.append(rule)
+
+        # Output the JSON structure
+        jx_workflow = {
+            "rules": [rules.__dict__ for rules in rules]
+        }
+        print(json.dumps(jx_workflow, indent=4))
     
-    def _print_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
+    def _find_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
         
         sorted_processes = sorted(self.processes.items(), key=lambda x: int(x[0]) if x[0].isdigit() else 0)
         
@@ -391,10 +455,11 @@ class ContractParser:
                 target_block.append("")
                 target_lines.append('\n'.join(target_block))
         
-        print("all: " + ' '.join([self._normalize_path(f) for f in all_targets]) + "\n")
+        target_lines.insert(0, "all: " + ' '.join([self._normalize_path(f) for f in all_targets]) + "\n")
 
-        for target in target_lines:
-            print(target)
+        return target_lines
+
+    
     
     def _find_final_processes(self, dependencies: Dict[str, Set[str]]) -> Set[str]:
         
@@ -522,13 +587,14 @@ def main():
         sys.exit(1)
     
     input_base = os.path.splitext(args.contract_file)[0]
-    output_file = f"{input_base}.makeflow"
+    output_file = f"{input_base}.jx"
     
     with open(output_file, 'w') as f:
         import sys
         old_stdout = sys.stdout
         sys.stdout = f
-        parser_obj.analyze_execution_order()
+        #parser_obj.generate_makefile()
+        parser_obj.generate_jx_workflow()
         sys.stdout = old_stdout
     
     print(f"Makeflow written to: {output_file}")
