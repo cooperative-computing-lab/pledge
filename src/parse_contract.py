@@ -354,17 +354,42 @@ class ContractParser:
             if l.startswith("all:"):
                 continue  # skip the all line
             elif '&:' in l:
+                # parse items
                 target_part, dep_part = l.split('&:', 1)
                 deps, command = dep_part.split('\n\t', 1)
                 target_names = target_part.strip().split()
-                target_names = [t for t in target_names if not '.tmp' in t]  # remove temporary files
                 dependencies = deps.strip().split()
-                dependencies = [d for d in dependencies if not '.tmp' in d]  # remove temporary files
+
+                # remove temporary files XXX
+                target_names = [t for t in target_names if not '.tmp' in t]
+                dependencies = [d for d in dependencies if not '.tmp' in d]
+
+                directory_structure = set([])
+
+                # assign remote names, if necessary
+                for i, t in enumerate(target_names):
+                    if '/' in t:
+                        remote_name = t.split('/')[-1]
+                        directory_structure.add('/'.join(t.split('/')[0:-1]))
+                        target_names[i] = {'dag_name': t, 'task_name': t}# + f' -> {remote_name}'}
+
+                for i, d in enumerate(dependencies):
+                    if '/' in d:
+                        remote_name = d.split('/')[-1]
+                        directory_structure.add('/'.join(d.split('/')[0:-1]))
+                        dependencies[i] = {'dag_name': d, 'task_name': d}#+ f' -> {remote_name}'}
+
+                directory_structure = ' '.join(set(directory_structure))
+                
+                if len(directory_structure) > 0:
+                    command = ''.join(['/usr/bin/mkdir -p ' + directory_structure, '; ', command.strip()])
+                else:
+                    command = command.strip()
+
                 rule = JXRule()
-                # fill add ./ to relative paths
                 rule.outputs = target_names
                 rule.inputs = dependencies
-                rule.command = command.strip()
+                rule.command = command
                 rules.append(rule)
 
         # Output the JSON structure

@@ -103,6 +103,7 @@ class FileAccessNode:
         self.read_perm = False
         self.write_perm = False
         self.exec_args = []
+        self.is_directory = False
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -280,6 +281,8 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].write_perm = True
             if 'O_CREAT' in line:
                 file_tree[filename].add_access('create')
+            if 'O_DIRECTORY' in line:
+                file_tree[filename].is_directory = True
                     
             continue
 
@@ -832,7 +835,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                             #if node.num_opens > 0: path_modes['open'] += node.num_opens
                             if node.num_reads > 0: 
                                 path_modes['read'] += node.num_reads
-                                if node.filename not in read_files:
+                                if node.filename not in read_files and not node.is_directory:
                                     read_files.append(node.filename)
                             if node.num_writes > 0:
                                 path_modes['write'] += node.num_writes
