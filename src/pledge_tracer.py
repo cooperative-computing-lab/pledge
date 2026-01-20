@@ -887,9 +887,11 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 if 'X' in access_chars and exec_files:
                     in_this_subpath = [f for f in exec_files if f.filename.startswith(f'{path}/')]
                     if in_this_subpath:
-                        arg_lists = [f.exec_args for f in in_this_subpath]
-                        for args in arg_lists:
-                            print(f"{indent*2}#\tExecutable: {' '.join(args)}")
+                        for f in in_this_subpath:
+                            print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)}")
+                            if f.exec_args[0].startswith('./'):
+                                # this is not a path or system executable, it needs to be an input file.
+                                read_files.append(f.filename)
                 if 'W' in access_chars and write_files:
                     # get the base filename or the disjoint part of the path string
                     in_this_subpath = [f.replace(f'{path}/', '') for f in write_files if f.startswith(f'{path}/') and f.count('/') == (path.count('/')+1)]

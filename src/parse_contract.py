@@ -23,6 +23,7 @@ class ProcessInfo:
     total_writes: int = 0
     file_dependencies: Set[str] = field(default_factory=set)
     file_outputs: Set[str] = field(default_factory=set)
+    exec_parent: "ProcessInfo" = None
 
 
 class ContractParser:    
@@ -48,21 +49,35 @@ class ContractParser:
         current_pid = None
         current_directory = None
 
+        parent_process = None
         for line in lines:
             pid_match = re.search(r'[├└]─ PID (\d+) (\d+) \[([^\]]+)\]', line)
             if pid_match:
                 pid, level, executable = pid_match.groups()
                 current_pid = pid
-                
+                current_level = int(level)
+
                 self.processes[pid] = ProcessInfo(
                     pid=pid,
                     executable=executable,
-                    level = int(level)
+                    level = current_level
                 )
+
+                if current_level <= 1:
+                    parent_process = self.processes[pid]
+                if current_level > 1:
+                    self.processes[pid].exec_parent = parent_process
+
                 continue
             
             if current_pid and current_pid in self.processes:
-                process = self.processes[current_pid]
+                inheritance = False
+
+                if current_pid == parent_process.pid:
+                    process = self.processes[current_pid]
+                else:
+                    process = parent_process
+                    inheritance = True
                 
                 dir_match = re.match(r'\s+([RWXMPDSCE]+)\s+<([^>]+)>\s+\(\d+\s+files?\)\s+\[([^\]]+)\]', line)
                 if dir_match:
@@ -90,12 +105,13 @@ class ContractParser:
                             # this file was created in addition to being written
                             process.file_outputs.add(file_path.strip('*'))
                 
-                executable_match = re.search(r'#\s+Executable:\s*(.+)', line)
-                if executable_match:
-                    exec_line = executable_match.group(1).strip()
-                    parts = exec_line.split()
-                    if parts:
-                        process.arguments = parts[1:] if len(parts) > 1 else []
+                if not inheritance:
+                    executable_match = re.search(r'#\s+Executable:\s*(.+)', line)
+                    if executable_match:
+                        exec_line = executable_match.group(1).strip()
+                        parts = exec_line.split()
+                        if parts:
+                            process.arguments = parts[1:] if len(parts) > 1 else []
                 
                 readable_match = re.search(r'#\s+Readable files(?:\s+\(glob\))?\s*:\s*(.+)', line)
                 if readable_match:
@@ -104,7 +120,7 @@ class ContractParser:
                     process.readable_files.extend(files)
                     for file_path in files:
                         # This would create a circular dependency but might point out a flaw in the program
-                        if not file_path in process.file_outputs and not file_path.split('/')[-1] == process.executable.split('/')[-1]:
+                        if not file_path in process.file_outputs:# and not file_path.split('/')[-1] == process.executable.split('/')[-1]:
                             process.file_dependencies.add(file_path)
                 
             # Parse CWD line
@@ -381,10 +397,10 @@ class ContractParser:
 
                 directory_structure = ' '.join(set(directory_structure))
                 
+                command = command.strip()
+
                 if len(directory_structure) > 0:
-                    command = ''.join(['/usr/bin/mkdir -p ' + directory_structure, '; ', command.strip()])
-                else:
-                    command = command.strip()
+                    command = ''.join(['/usr/bin/mkdir -p ' + directory_structure, '; ', command])
 
                 rule = JXRule()
                 rule.outputs = target_names
@@ -406,9 +422,11 @@ class ContractParser:
         all_targets = []
 
         for pid, process in sorted_processes:
-            if process.level != 1:
-                continue  # only invoke the top-level processes
-            
+            if process.level < 1:
+                continue  # do not invoke the initial process
+            elif process.level > 1:
+                continue 
+
             if process.file_outputs:
                 outputs = [self._normalize_path(f) for f in sorted(process.file_outputs)]
                 all_targets.extend(outputs)
@@ -442,7 +460,8 @@ class ContractParser:
                 else:
                     exec_name = os.path.basename(process.executable) if process.executable else f"pid_{pid}"
                     target_block.append(f"\t@echo \"Executing {exec_name} (PID {pid})\"")
-                
+             
+
                 target_block.append("")
                 target_lines.append('\n'.join(target_block))
             else:
