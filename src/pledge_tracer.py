@@ -104,6 +104,7 @@ class FileAccessNode:
         self.write_perm = False
         self.exec_args = []
         self.is_directory = False
+        self.at_fdcwd = ''
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -263,6 +264,7 @@ def parse_strace_output(strace_lines):
                     global cwd
                     if cwd == None:
                         cwd = cwd_re.group(1)
+                    file_tree[filename].at_fdcwd = cwd
 
             if 'ENOENT' in line:
                 file_tree[filename].add_access('enoent')
@@ -438,6 +440,10 @@ def parse_strace_output(strace_lines):
             else:
                 file_tree[filename].add_access('exec')
 
+            if 'PWD' in line:
+                cwd_re = re.search(r'PWD=([^ ]+)', line)
+                file_tree[filename].at_fdcwd = cwd_re.group(1)
+
             file_tree[filename].exec_args = args
             continue
 
@@ -478,6 +484,7 @@ def find_parent_pid(pid, pid_dep):
     return None
 
 def build_process_tree(pid_dep):
+    # at this point pid_dep is wide with depths of 1 to 2
     # Find root processes (those that don't appear as children)
     all_children = set()
     for children in pid_dep.values():
@@ -488,10 +495,14 @@ def build_process_tree(pid_dep):
     # may reach max recursion depth
     def build_subtree(pid, level=0):
         tree = [(pid, level)]
+        if level > 50:
+            return []
         if pid in pid_dep:
             for child in sorted(pid_dep[pid].keys(), key=lambda x: int(x) if str(x).isdigit() else 0):
                 tree.extend(build_subtree(child, level + 1))
         return tree
+    
+
     
     full_tree = []
     for root in sorted(roots, key=lambda x: int(x) if str(x).isdigit() else 0):
@@ -705,10 +716,9 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 print(f"{indent}{access_chars} </{root}> ({total_files} files) [{mode_summary}]")
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.filename.startswith(f'/{root}/')]
-                    if in_this_subpath:
-                        arg_lists = [f.exec_args for f in in_this_subpath]
-                        for args in arg_lists:
-                            print(f"{indent*2}#\tExecutable: {' '.join(args)}")
+                    for f in in_this_subpath:
+                        print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + os.path.relpath(f.at_fdcwd, cwd) if f.at_fdcwd != cwd else ''}")
+                            
 
         # Then handle mid_list paths
         for mid in mid_list:
@@ -717,6 +727,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 total_files = 0
                 mode_counts = defaultdict(int)
                 access_patterns = defaultdict(int)
+                path_modes = defaultdict(int)
                 exec_files = []
                 mid_abs = f'/{mid}'
                 for dirpath, files in mid_paths.items():
@@ -888,7 +899,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                     in_this_subpath = [f for f in exec_files if f.filename.startswith(f'{path}/')]
                     if in_this_subpath:
                         for f in in_this_subpath:
-                            print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)}")
+                            print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + os.path.relpath(f.at_fdcwd, cwd) if f.at_fdcwd and f.at_fdcwd != cwd else ''}")
                             if f.exec_args[0].startswith('./'):
                                 # this is not a path or system executable, it needs to be an input file.
                                 read_files.append(f.filename)

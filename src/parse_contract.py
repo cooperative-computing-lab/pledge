@@ -24,7 +24,7 @@ class ProcessInfo:
     file_dependencies: Set[str] = field(default_factory=set)
     file_outputs: Set[str] = field(default_factory=set)
     exec_parent: "ProcessInfo" = None
-
+    at_fdcwd: Optional[str] = None
 
 class ContractParser:    
     def __init__(self):
@@ -32,24 +32,21 @@ class ContractParser:
         self.cwd: Optional[str] = None
         
     def parse_contract_file(self, file_path: str) -> bool:
-        try:
-            with open(file_path, 'r') as f:
-                content = f.read()
-            
-            self._parse_processes(content)
-            self._parse_cwd(content)
-            return True
-            
-        except Exception as e:
-            print(f"Error parsing contract file: {e}")
-            return False
+        #try:
+        with open(file_path, 'r') as f:
+            content = f.read()
+        
+        self._parse_processes(content)
+        self._parse_cwd(content)
+        return True
     
     def _parse_processes(self, content: str) -> None:
         lines = content.split('\n')
         current_pid = None
         current_directory = None
-
         parent_process = None
+        task_process = None
+        
         for line in lines:
             pid_match = re.search(r'[├└]─ PID (\d+) (\d+) \[([^\]]+)\]', line)
             if pid_match:
@@ -63,20 +60,29 @@ class ContractParser:
                     level = current_level
                 )
 
-                if current_level <= 1:
+                # if we are at level 0 we are a root process
+                if current_level == 0:
                     parent_process = self.processes[pid]
+                    # we have a new root, reset task process
+                    task_process = None
+                # level 1 processes are to become tasks
+                if current_level == 1:
+                    task_process = self.processes[pid]
+                # if we are at level > 1, we inherit from the last level 1 process
                 if current_level > 1:
-                    self.processes[pid].exec_parent = parent_process
+                    self.processes[pid].exec_parent = task_process
 
                 continue
             
             if current_pid and current_pid in self.processes:
                 inheritance = False
 
-                if current_pid == parent_process.pid:
+                # if we are a root or task process we add to our own info
+                if current_pid == parent_process.pid or current_pid == task_process.pid:
                     process = self.processes[current_pid]
+                # if we are a child process we inherit from the parent
                 else:
-                    process = parent_process
+                    process = task_process
                     inheritance = True
                 
                 dir_match = re.match(r'\s+([RWXMPDSCE]+)\s+<([^>]+)>\s+\(\d+\s+files?\)\s+\[([^\]]+)\]', line)
@@ -106,12 +112,15 @@ class ContractParser:
                             process.file_outputs.add(file_path.strip('*'))
                 
                 if not inheritance:
-                    executable_match = re.search(r'#\s+Executable:\s*(.+)', line)
+                    executable_match = re.search(r'#\s+Executable:\s*(.+)  (?:ATFDCWD:(.+))', line)
                     if executable_match:
                         exec_line = executable_match.group(1).strip()
                         parts = exec_line.split()
                         if parts:
                             process.arguments = parts[1:] if len(parts) > 1 else []
+
+                        if len(executable_match.groups()) > 1:
+                            process.at_fdcwd = executable_match.group(2).strip(',\\"\'')
                 
                 readable_match = re.search(r'#\s+Readable files(?:\s+\(glob\))?\s*:\s*(.+)', line)
                 if readable_match:
@@ -177,6 +186,15 @@ class ContractParser:
         # example CWD = /home/user/project
         # file_path = project/src/main.c
         # result = src/main.c
+        # example CWD = /home/user/project/data/scripts/
+        # file_path = project/data/scripts/slurm/jobs/
+        # relative parts = project/data/scripts/
+        # cwd[-len(relative parts):] = relative parts
+        # result = slurm/jobs
+
+        # example CWD = /home/user/project
+        # file_path = /home/user/data/image.png
+        # result = ../data/image.png
 
         cwd_groups = self.cwd.split('/')
         file_groups = file_path.split('/')
@@ -187,15 +205,31 @@ class ContractParser:
         # = /data/src/image ! wrong
         # num common = 2
 
+        # another problem is when the file path includes back directories
+        # CWD = /home/user/project/src
+        # file_path = ../data/image.png
+        # or even better
+        # file_path = project/../data/image.png
+
         # this will not work for very long
         if file_groups[0] in cwd_groups:
+            # how many directories are common to both paths
             num_common = len(list(set(cwd_groups).intersection(set(file_groups))))
+            # hopefully the common parts are at the start
             relative_parts = file_groups[num_common:]
-            file_path = '/'.join(relative_parts)
+
+            if cwd_groups[-len(relative_parts):] == relative_parts:
+                file_path = '/'.join(relative_parts)
+            else:
+                # build relative path with .. parts
+                num_up = len(cwd_groups) - num_common
+                relative_parts = ['..'] * num_up + file_groups[num_common:]
+                file_path = '/'.join(relative_parts)
             #file_path = './' + '/'.join(relative_parts)
 
 
         # replace escape sequences and bad characters for makefiles
+
 
         # pair for idempotence
         file_path = file_path.replace(':', '\\:')
@@ -385,22 +419,69 @@ class ContractParser:
                 # assign remote names, if necessary
                 for i, t in enumerate(target_names):
                     if '/' in t:
-                        remote_name = t.split('/')[-1]
                         directory_structure.add('/'.join(t.split('/')[0:-1]))
-                        target_names[i] = {'dag_name': t, 'task_name': t}# + f' -> {remote_name}'}
+                        target_names[i] = {'dag_name': t, 'task_name': t.split('../')[-1]}
 
                 for i, d in enumerate(dependencies):
                     if '/' in d:
-                        remote_name = d.split('/')[-1]
                         directory_structure.add('/'.join(d.split('/')[0:-1]))
-                        dependencies[i] = {'dag_name': d, 'task_name': d}#+ f' -> {remote_name}'}
+                        dependencies[i] = {'dag_name': d, 'task_name': d.split('../')[-1]}
+
+                depth = 0
+                for dir in directory_structure:
+                    num_up = dir.split('../')
+                    depth = max(depth, len(num_up) - 1)
+
+                depth -= 1
 
                 directory_structure = ' '.join(set(directory_structure))
                 
                 command = command.strip()
 
                 if len(directory_structure) > 0:
-                    command = ''.join(['/usr/bin/mkdir -p ' + directory_structure, '; ', command])
+                    # add a echo return to the real command
+                    command = command + '; echo $?; echo CMDRET; ls -l; '
+
+                    # add the down directories first
+                    depth_from_cwd = ''.join(['/usr/bin/mkdir -p ' + directory_structure, '; '])
+
+                    # if there are back directories we need to build up and cd there
+                    # It works if the program accesses a relative path (depth*../)/something. 
+                    # The problem now is if the program accesses something < depth levels up.
+                    # The recreated directory structure has the directory names but the contents 
+                    # were not linked in by the task setup. They are sitting at the base level. 
+
+                    # where depth is how deep the task cwd is from the worker's starting point
+                    if depth > 0:
+                        up_dirs = 'dir_structure_auto/' * depth
+
+                        # gets us mkdir -p dir_structure_auto/dir_structure_auto/...; cd dir_structure_auto/...
+                        depth_from_worker = ''.join(['/usr/bin/mkdir -p ' + up_dirs + '; cd ' + up_dirs, '; '])
+
+                        back_to_workspace = ''
+                        # we need to mv the contents of the base level into the recreated structure
+                        for d in directory_structure.split():
+                            dir_parts = d.split('/')
+                            num_up = len(d.split('../')) - 1
+
+                            # if this path goes up we need to find the contents at the base and move them there
+                            # say we are at a/b/c/d/main.c
+                            # and we have ../../bob/data.txt
+                            # mv ../../../../bob ../../bob
+                            if num_up < depth:
+                                source = '../' * depth
+                                dest = '../' * num_up
+                                base = dir_parts[num_up]
+                                mov = f' mv {source}{base} {dest}{base} ;'
+                                mov_back = f' mv {dest}{base} {source}{base} ;'
+                                depth_from_worker += mov
+                                back_to_workspace += mov_back
+
+                        #                  mkdir; cd; mv;     mkdir           command  mv back
+                        command = ''.join([depth_from_worker, depth_from_cwd, command, back_to_workspace])
+                    else:
+                        command = depth_from_cwd + '; ' + command
+
 
                 rule = JXRule()
                 rule.outputs = target_names
@@ -454,7 +535,7 @@ class ContractParser:
                 
                 if process.executable and process.arguments:
                     args_str = ' '.join(process.arguments)
-                    target_block.append(f"\t{process.executable} {args_str}")
+                    target_block.append(f"\t{'cd ' + process.at_fdcwd + ' ;' if process.at_fdcwd else ''} {process.executable} {args_str}")
                 elif process.executable:
                     target_block.append(f"\t{process.executable}")
                 else:
@@ -631,17 +712,26 @@ def main():
         sys.exit(1)
     
     input_base = os.path.splitext(args.contract_file)[0]
-    output_file = f"{input_base}.jx"
+    output_file_makeflow = f"{input_base}.makeflow"
+    output_file_jx = f"{input_base}.jx"
     
-    with open(output_file, 'w') as f:
+    with open(output_file_jx, 'w') as f:
         import sys
         old_stdout = sys.stdout
         sys.stdout = f
-        #parser_obj.generate_makefile()
         parser_obj.generate_jx_workflow()
         sys.stdout = old_stdout
-    
-    print(f"Makeflow written to: {output_file}")
+
+    with open(output_file_makeflow, 'w') as f:
+        import sys
+        old_stdout = sys.stdout
+        sys.stdout = f
+        parser_obj.generate_makefile()
+        sys.stdout = old_stdout
+
+
+    print(f"Makeflow written to: {output_file_makeflow}")
+    print(f"JX workflow written to: {output_file_jx}")
 
 
 if __name__ == '__main__':
