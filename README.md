@@ -50,57 +50,22 @@ The contract file will look something like the text below.
     ├─ PID 2082661 (child) [/usr/bin/ln]
     ├─ PID 2082662 (child) [/usr/bin/ln]
   ├─ PID 2082664 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/ungrib.exe]
+      Read Files: x, y, z
+      Write Files: a, b, c
+      Executable: ungrib.exe x y z a b c
   ├─ PID 2082702 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/geogrid.exe]
   ├─ PID 2082763 (child) [/software/w/wrf/4.7/WPS/WPS-4.6.0/metgrid.exe]
   ├─ PID 2082794 (child) [/usr/bin/ln]
   ├─ PID 2082795 (child) [/software/w/wrf/4.7/WRF/WRFV4.7.0/run/real.exe]
   ├─ PID 2082820 (child) [/software/w/wrf/4.7/WRF/WRFV4.7.0/run/wrf.exe]
-├─ PID 2082710 (root) [unknown]
-├─ PID 2082711 (root) [unknown]
-├─ PID 2082767 (root) [unknown]
-├─ PID 2082768 (root) [unknown]
-├─ PID 2082799 (root) [unknown]
-├─ PID 2082800 (root) [unknown]
-├─ PID 2082821 (root) [unknown]
-
-Access       <Directory>    Count
-
-#Process ID: 0 (root process)
-E </afs/crc.nd.edu/user/c/username/miniconda3> (2 files) [enoent: 4]
-EM </afs> (13 files) [enoent: 12, stat: 1]
-EM </opt> (65 files) [enoent: 59, stat: 6]
-EM </software> (34 files) [enoent: 27, stat: 55]
-RM </users> (7 files) [read: 11, stat: 9]
-#Searching for: x86-64-v3, x86-64-v2, x86_64, haswell, tls, ln
-#Read/Write permission mismatches (requested but not performed):
-#/dev/tty
-
-...
 
 ```
 
-A process tree describes the hierarchy of the program structure. Below the process tree there is an entry for each process describing the I/O behavior. 
+A process tree describes the hierarchy of the program structure. Below each process there are entries describing the I/O behavior. 
 
-### Enforcer
+### Contract Utility - Workflow Generation
 
-With the contract generated we may now use it in combination with the enforcer on subsequent executions. 
-We first have to set the environment variable:<br>
-`export CONTRACT=./contract_name`<br>
-We use `LD_PRELOAD`, however, `PLEDGE` temporarily writes an `.so` called `minienforcer.so` and appends its path to the `LD_PRELOAD` environment variable, so the user does not have to set it.<br>
-We can run our command with:<br>
-`pledge enforce cat sample.c`<br>
-The output should be something like this:<br>
+The contract can be viewed as-is to understand the behavior of the application. It offers the user a way to see all of the files that were
+interacted with, including those implicitly referred to by the executables that would have not been identified by simply reading the application. 
 
-```
-Enforcer path: /home/user/dummy/cat.sample.c.contract
-OPEN: caught open with path [sample.c]
-with absolute [/home/user/dummy/sample.c]
-ALLOWED: Path [/home/user/dummy/sample.c] with permission [R] is not in violation of the contract.
-READING: caught path [/proc/self/fd/3] with link to [/home/user/dummy/sample.c]
-ALLOWED: Path [/home/user/dummy/sample.c] with permission [R] is not in violation of the contract.
-WRITING: caught path [/proc/self/fd/1] with link to [/dev/pts/0]
-WHITELISTED: Path [/dev/pts/0] is whitelisted internally.
-READING: caught path [/proc/self/fd/3] with link to [/home/user/dummy/sample.c]
-ALLOWED: Path [/home/user/dummy/sample.c] with permission [R] is not in violation of the contract.
-```
-
+The contract may also be parsed further, by `parse_contract.py`, which will create a Makefile-based DAG of the application. This representation can be understood by Makeflow, a CCTools workflow description language. Subsequently Makeflow can execute the application using a variety of executors such as TaskVine or WorkQueue. It also provides functionality to deploy workers on a variety of batch systems like Slurm and HTCondor. 
