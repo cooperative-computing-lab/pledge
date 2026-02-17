@@ -170,7 +170,7 @@ def run_strace(pid_or_cmd):
 
     # strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone 
 
-    cmd = ['strace', '-f', '-y', '-v', '-s 1024', '--trace=file,read,write,mmap,getdents64,lseek,clone'] + pid_or_cmd[0].split(' ')
+    cmd = ['strace', '-f', '-y', '-v', '-s 1024', '--trace=file,read,write,mmap,lseek,clone'] + pid_or_cmd[0].split(' ')
     print("Running command:", ' '.join(pid_or_cmd))
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
     return proc
