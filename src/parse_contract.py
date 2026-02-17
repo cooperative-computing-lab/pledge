@@ -489,10 +489,37 @@ class ContractParser:
                 rule.command = command
                 rules.append(rule)
 
-        # Output the JSON structure
+        # create the jx workflow. Add rules.
         jx_workflow = {
             "rules": [rules.__dict__ for rules in rules]
         }
+
+        exec_vars = {}
+
+        def varname_from_command(command: str) -> str:
+            # split from args
+            executable = command.split()[0]
+            # may be absolute path
+            name = executable.split('/')[-1].upper()
+            return name
+
+        def swap_for_var(command: str, varname: str) -> str:
+            executable = command.split()[0]
+            return command.replace(executable, f"{{{varname}}}", 1)
+ 
+        # replace executables with variables and add to define section
+
+        for rule in jx_workflow['rules']:
+            command = rule['command']
+            executable = command.split()[0]
+
+            name = varname_from_command(executable)
+            exec_vars[name] = executable
+            rule['command'] = swap_for_var(command, name)
+
+        
+        jx_workflow["define"] = {name: executable for name, executable in exec_vars.items()}
+
         print(json.dumps(jx_workflow, indent=4))
     
     def _find_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
