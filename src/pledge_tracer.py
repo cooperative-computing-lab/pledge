@@ -717,7 +717,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 if exec_files:
                     in_this_subpath = [f for f in exec_files if f.filename.startswith(f'/{root}/')]
                     for f in in_this_subpath:
-                        print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + os.path.relpath(f.at_fdcwd, cwd) if f.at_fdcwd != cwd else ''}")
+                        print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + f.at_fdcwd if f.at_fdcwd != cwd else ''}")
                             
 
         # Then handle mid_list paths
@@ -899,7 +899,7 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                     in_this_subpath = [f for f in exec_files if f.filename.startswith(f'{path}/')]
                     if in_this_subpath:
                         for f in in_this_subpath:
-                            print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + os.path.relpath(f.at_fdcwd, cwd) if f.at_fdcwd and f.at_fdcwd != cwd else ''}")
+                            print(f"{indent*2}#\tExecutable: {' '.join(f.exec_args)} {' ATFDCWD: ' + f.at_fdcwd if f.at_fdcwd and f.at_fdcwd != cwd else ''}")
                             if f.exec_args[0].startswith('./'):
                                 # this is not a path or system executable, it needs to be an input file.
                                 read_files.append(f.filename)

@@ -535,7 +535,7 @@ class ContractParser:
                 
                 if process.executable and process.arguments:
                     args_str = ' '.join(process.arguments)
-                    target_block.append(f"\t{'cd ' + process.at_fdcwd + ' ;' if process.at_fdcwd else ''} {process.executable} {args_str}")
+                    target_block.append(f"\t{'cd ' + os.path.relpath(process.at_fdcwd,self.cwd).strip() + ' ;' if process.at_fdcwd.strip() != self.cwd.strip() else ''} {process.executable} {args_str}")
                 elif process.executable:
                     target_block.append(f"\t{process.executable}")
                 else:
