@@ -47,6 +47,7 @@ def inverse_pattern_jx_expr(filenames):
         return [idx[1] for idx in ops]
 
     expressions = []
+    expr_varmap = {}
     # find the expression for each file group
     for k in groups:
         if len(groups[k]) == 0:
@@ -83,18 +84,27 @@ def inverse_pattern_jx_expr(filenames):
         #print("Iterations:", non_matches + 1) # plus initial
         
         chars_added = 0
+        varmap = {}
         for idx, values in replaced_at_idx.items():
             values = sorted(values)
             v = [list(v) for g, v in itertools.groupby(values, lambda x: x.isdigit())]
             
+            def makevarname():
+                import string
+                return f"{string.ascii_lowercase[chars_added % 26]}"
+
             # the values at this index were sequential integers
             if len(v) == 1:
-                test_string = sub_idx([idx+chars_added], test_string, token=f'[{v[0][0]}-{v[0][-1]}]')
-                chars_added += len(f'[{v[0][0]}-{v[0][-1]}]') - 1
-        
+                minmax = (v[0][0], v[0][-1])
+                varname = makevarname()
+                test_string = sub_idx([idx+chars_added], test_string, token=f"{{{varname}}}")
+                varmap[varname] = minmax
+                chars_added += len(varname) + 2 # account for the change in length of the string
+
+        expr_varmap[test_string] = varmap
         expressions.append(test_string)
 
-    return file_constants, expressions
+    return file_constants, expressions, expr_varmap
 
 
 

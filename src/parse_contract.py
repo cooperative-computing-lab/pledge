@@ -511,9 +511,19 @@ class ContractParser:
         from inverse_pattern import inverse_pattern_jx_expr
 
         class JxTemplate():
-            def __init__(self, expr):
-                self.expr = 'KWD_REMOVE_QUOTE_BEFORETemplate(KWD_ADD_QUOTE_HERE' + str(expr) + 'KWD_ADD_QUOTE_HERE)KWD_REMOVE_QUOTE_AFTER'
+            def __init__(self, expr, varmap=None):
+                qrem = ('KWD_REMOVE_QUOTE_BEFORE', 'KWD_REMOVE_QUOTE_AFTER')
+                qadd = 'KWD_ADD_QUOTE_HERE'
+                self.expr = f'Template({qadd}' + str(expr) + f'{qadd})'
+                
+                # join([template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT))])
+                if varmap:
+                    for var, minmax in varmap.items():
+                        self.expr = ''.join([self.expr, f' for {var} in range({minmax[0]}, {minmax[1]}+1) '])
+                    self.expr = 'join([' + self.expr + '])'
             
+                self.expr = ''.join([qrem[0], self.expr, qrem[1]])
+
             def __str__(self):
                 return self.expr
 
@@ -528,11 +538,11 @@ class ContractParser:
             rule['command'] = JxTemplate(swap_for_var(command, name))
 
             # inverse pattern files
-            const_inputs, expr_inputs = inverse_pattern_jx_expr(rule['inputs'])
-            const_outputs, expr_outputs = inverse_pattern_jx_expr(rule['outputs'])
+            const_inputs, expr_inputs, input_varmap = inverse_pattern_jx_expr(rule['inputs'])
+            const_outputs, expr_outputs, output_varmap = inverse_pattern_jx_expr(rule['outputs'])
 
-            expr_inputs_templated = [JxTemplate(e) for e in expr_inputs]
-            expr_outputs_templated = [JxTemplate(e) for e in expr_outputs]
+            expr_inputs_templated = [JxTemplate(e, varmap=input_varmap[e]) for e in expr_inputs]
+            expr_outputs_templated = [JxTemplate(e, varmap=output_varmap[e]) for e in expr_outputs]
 
             rule['inputs'] = const_inputs + expr_inputs_templated
             rule['outputs'] = const_outputs + expr_outputs_templated
