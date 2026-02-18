@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Set, Optional
 import os
 import json
-from nltk.metrics.distance import edit_distance
 
 @dataclass
 class ProcessInfo:
@@ -514,13 +513,14 @@ class ContractParser:
             def __init__(self, expr, varmap=None):
                 qrem = ('KWD_REMOVE_QUOTE_BEFORE', 'KWD_REMOVE_QUOTE_AFTER')
                 qadd = 'KWD_ADD_QUOTE_HERE'
-                self.expr = f'Template({qadd}' + str(expr) + f'{qadd})'
+                self.expr = f'template({qadd}' + str(expr) + f'{qadd})'
                 
                 # join([template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT))])
                 if varmap:
                     for var, minmax in varmap.items():
                         self.expr = ''.join([self.expr, f' for {var} in range({minmax[0]}, {minmax[1]}+1) '])
-                    self.expr = 'join([' + self.expr + '])'
+                    #self.expr = 'join([' + self.expr + '])'
+
             
                 self.expr = ''.join([qrem[0], self.expr, qrem[1]])
 
