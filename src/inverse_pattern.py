@@ -7,8 +7,8 @@ def sub_idx(indexes, name, token='$'):
     return name
 
 
-# Take in a list of filenames and convert applicable names to an expression. 
-def inverse_pattern(filenames):
+# Take in a list of filenames and convert applicable names to a jx expression. 
+def inverse_pattern_jx_expr(filenames):
     # make groups of at least 80% similar files
     groups = {}
     for f1 in filenames:

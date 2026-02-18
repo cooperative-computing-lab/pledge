@@ -499,27 +499,45 @@ class ContractParser:
 
         def varname_from_command(command: str) -> str:
             # split from args
-            executable = command.split()[0]
+            executable = command.split()[0].strip('"')
             # may be absolute path
             name = executable.split('/')[-1].upper()
             return name
 
         def swap_for_var(command: str, varname: str) -> str:
-            executable = command.split()[0]
+            executable = command.split()[0].strip('"')
             return command.replace(executable, f"{{{varname}}}", 1)
  
+        from inverse_pattern import inverse_pattern_jx_expr
+
+        class JxTemplate():
+            def __init__(self, expr):
+                self.expr = 'KWD_REMOVE_QUOTE_BEFORETemplate(KWD_ADD_QUOTE_HERE' + str(expr) + 'KWD_ADD_QUOTE_HERE)KWD_REMOVE_QUOTE_AFTER'
+            
+            def __str__(self):
+                return self.expr
+
         # replace names with variables. Add to defines when applicable
         for rule in jx_workflow['rules']:
             # replace command with template + define
-            command = rule['command']
+            command = rule['command'].strip('"')
             executable = command.split()[0]
 
             name = varname_from_command(executable)
             exec_vars[name] = executable
-            rule['command'] = f"template(\"{swap_for_var(command, name)}\")".strip('"')
+            rule['command'] = JxTemplate(swap_for_var(command, name))
 
             # inverse pattern files
-            inputs = rule['inputs']
+            const_inputs, expr_inputs = inverse_pattern_jx_expr(rule['inputs'])
+            const_outputs, expr_outputs = inverse_pattern_jx_expr(rule['outputs'])
+
+            expr_inputs_templated = [JxTemplate(e) for e in expr_inputs]
+            expr_outputs_templated = [JxTemplate(e) for e in expr_outputs]
+
+            rule['inputs'] = const_inputs + expr_inputs_templated
+            rule['outputs'] = const_outputs + expr_outputs_templated
+            
+            
 
 
 
@@ -541,34 +559,24 @@ class ContractParser:
 		],
         """
 
-        json_rep = json.dumps(jx_workflow)
+        # need to do some non-standard json. no quotes around jx expressions but add inside
 
-        # # need to do non-standard json. no quotes around jx expressions
-        # # print(json.dumps(jx_workflow, indent=4))
-        # print('{')
-        # # defines
-        # if jx_workflow["define"]:
-        #     print('    "define": {')
-        #     for i, (name, value) in enumerate(jx_workflow["define"].items()):
-        #         comma = ',' if i < len(jx_workflow["define"]) - 1 else ''
-        #         print(f'        "{name}": "{value}"{comma}')
-        #     print('    },')
-        
-        # # rules
-        # print('    "rules": [')
-        # for i, rule in enumerate(jx_workflow['rules']):
-        #     print('        {')
-        #     print(f'            "command": {rule["command"]},')
+        class CustomEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, JxTemplate):
+                    return obj.expr
+                return super().default(obj)
+                
+        json_rep = json.dumps(jx_workflow, indent=4, cls=CustomEncoder)
 
-        #     input_files = template_file_list(rule["inputs"])
-        #     print(f'            "inputs": {", ".join(input_files)},')
-        #     output_files = template_file_list(rule["outputs"])
-        #     print(f'            "outputs": {", ".join(output_files)}')
-        #     print('        },')
-        # print('    ]')
-        # print('}')
+        pat_remove_quotes = r'"KWD_REMOVE_QUOTE_BEFORE(.*)KWD_REMOVE_QUOTE_AFTER"'
+        remove_template_quotes = re.sub(pat_remove_quotes, str(r'\1'), json_rep)
 
+        pat_add_quotes = r'KWD_ADD_QUOTE_HERE'
+        jx_final = re.sub(pat_add_quotes, '"', remove_template_quotes)
 
+        print(jx_final)
+       
     
     def _find_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
         
