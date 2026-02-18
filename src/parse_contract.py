@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Set, Optional
 import os
 import json
+from nltk.metrics.distance import edit_distance
 
 @dataclass
 class ProcessInfo:
@@ -507,20 +508,67 @@ class ContractParser:
             executable = command.split()[0]
             return command.replace(executable, f"{{{varname}}}", 1)
  
-        # replace executables with variables and add to define section
-
+        # replace names with variables. Add to defines when applicable
         for rule in jx_workflow['rules']:
+            # replace command with template + define
             command = rule['command']
             executable = command.split()[0]
 
             name = varname_from_command(executable)
             exec_vars[name] = executable
-            rule['command'] = swap_for_var(command, name)
+            rule['command'] = f"template(\"{swap_for_var(command, name)}\")".strip('"')
+
+            # inverse pattern files
+            inputs = rule['inputs']
+
+
 
         
         jx_workflow["define"] = {name: executable for name, executable in exec_vars.items()}
 
-        print(json.dumps(jx_workflow, indent=4))
+        """
+        Example of jx syntax 
+        } for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT)),
+	    {
+		"command": format(
+			"%s output.fasta %s",
+			CAT_BLAST,
+			join([template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT))]),
+		),
+		"inputs": [
+			CAT_BLAST,
+			template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT)),
+		],
+        """
+
+        json_rep = json.dumps(jx_workflow)
+
+        # # need to do non-standard json. no quotes around jx expressions
+        # # print(json.dumps(jx_workflow, indent=4))
+        # print('{')
+        # # defines
+        # if jx_workflow["define"]:
+        #     print('    "define": {')
+        #     for i, (name, value) in enumerate(jx_workflow["define"].items()):
+        #         comma = ',' if i < len(jx_workflow["define"]) - 1 else ''
+        #         print(f'        "{name}": "{value}"{comma}')
+        #     print('    },')
+        
+        # # rules
+        # print('    "rules": [')
+        # for i, rule in enumerate(jx_workflow['rules']):
+        #     print('        {')
+        #     print(f'            "command": {rule["command"]},')
+
+        #     input_files = template_file_list(rule["inputs"])
+        #     print(f'            "inputs": {", ".join(input_files)},')
+        #     output_files = template_file_list(rule["outputs"])
+        #     print(f'            "outputs": {", ".join(output_files)}')
+        #     print('        },')
+        # print('    ]')
+        # print('}')
+
+
     
     def _find_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
         
@@ -530,6 +578,7 @@ class ContractParser:
         all_targets = []
 
         for pid, process in sorted_processes:
+            #XXX need to change for setting different level
             if process.level < 1:
                 continue  # do not invoke the initial process
             elif process.level > 1:
@@ -635,6 +684,8 @@ class ContractParser:
     def _build_dependency_graph(self) -> Dict[str, Set[str]]:
         
         dependencies = defaultdict(set)
+
+        return dependencies
         
         # Map output files to the processes that create them
         file_producers = defaultdict(set)
@@ -660,7 +711,7 @@ class ContractParser:
                     else:
                         file_producers[file_path].add(pid)
         
-        # Second pass: find file-level dependencies (more precise)
+        # find file level dependencies
         for pid, process in self.processes.items():
             # Check if this process reads files produced by other processes
             for read_file in process.file_dependencies:
@@ -677,7 +728,7 @@ class ContractParser:
                             if producer_pid != pid and int(producer_pid) < int(pid):
                                 dependencies[pid].add(producer_pid)
         
-        # Third pass: fallback to directory-level dependencies for unmatched cases
+        # fallback to directory-level dependencies for unmatched cases
         for pid, process in self.processes.items():
             for input_dir in process.input_directories:
                 for output_dir, producer_pids in dir_producers.items():
