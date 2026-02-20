@@ -261,117 +261,18 @@ class ContractParser:
         
         return result
     
-    def analyze_data_flow(self) -> None:
-        
-        print("Data Flow Analysis:\n")
-        
-        dependencies = self._build_dependency_graph()
-        
-        chains = self._find_data_flow_chains(dependencies)
-        
-        if chains:
-            print("Data Flow Chains:")
-            for i, chain in enumerate(chains, 1):
-                print(f"  Chain {i}: {' → '.join([self._get_process_name(pid) for pid in chain])}")
-                # Show what data flows between processes
-                for j in range(len(chain) - 1):
-                    producer_pid = chain[j]
-                    consumer_pid = chain[j + 1]
-                    shared_data = self._find_shared_data(producer_pid, consumer_pid)
-                    if shared_data:
-                        print(f"    {self._get_process_name(producer_pid)} → {self._get_process_name(consumer_pid)}: {', '.join(list(shared_data)[:3])}{'...' if len(shared_data) > 3 else ''}")
-            print()
-        
-        # Show concurrent processes (no dependencies)
-        concurrent = self._find_concurrent_processes(dependencies)
-        if concurrent:
-            print("Processes that can run concurrently:")
-            for group in concurrent:
-                if len(group) > 1:
-                    print(f"  • {', '.join([self._get_process_name(pid) for pid in group])}")
-            print()
     
-    def _get_process_name(self, pid: str) -> str:
-        
-        process = self.processes.get(pid)
-        if process and process.executable:
-            return f"{os.path.basename(process.executable)}({pid})"
-        return f"PID{pid}"
-    
-    def _find_data_flow_chains(self, dependencies: Dict[str, Set[str]]) -> List[List[str]]:
-        
-        chains = []
-        visited = set()
-        
-        # Start from processes with no dependencies
-        root_processes = set(self.processes.keys()) - set(dependencies.keys())
-        
-        for root in sorted(root_processes, key=lambda x: int(x) if x.isdigit() else 0):
-            if root not in visited:
-                chain = self._trace_dependency_chain(root, dependencies, visited)
-                if len(chain) > 1:
-                    chains.append(chain)
-        
-        return chains
-    
-    def _trace_dependency_chain(self, pid: str, dependencies: Dict[str, Set[str]], visited: set) -> List[str]:
-        
-        chain = [pid]
-        visited.add(pid)
-        
-        # Find processes that depend on this one
-        dependents = []
-        for dependent_pid, deps in dependencies.items():
-            if pid in deps and dependent_pid not in visited:
-                dependents.append(dependent_pid)
-        
-        if dependents:
-            next_pid = sorted(dependents, key=lambda x: int(x) if x.isdigit() else 0)[0]
-            chain.extend(self._trace_dependency_chain(next_pid, dependencies, visited)[1:])
-        
-        return chain
-    
-    def _find_shared_data(self, producer_pid: str, consumer_pid: str) -> Set[str]:
-        
-        producer = self.processes.get(producer_pid)
-        consumer = self.processes.get(consumer_pid)
-        
-        if not producer or not consumer:
-            return set()
-        
-        shared_files = producer.file_outputs & consumer.file_dependencies
-        
-        shared_dirs = set()
-        for out_dir in producer.output_directories:
-            for in_dir in consumer.input_directories:
-                if self._paths_overlap(out_dir, in_dir):
-                    shared_dirs.add(f"directory:{out_dir}")
-        
-        return shared_files | shared_dirs
-    
-    def _find_concurrent_processes(self, dependencies: Dict[str, Set[str]]) -> List[List[str]]:
-        
-        all_deps = set()
-        for deps in dependencies.values():
-            all_deps.update(deps)
-        
-        stages = self._find_execution_stages(dependencies)
-        return stages
     
     def generate_makefile(self) -> None:
         
-        dependencies = self._build_dependency_graph()
-        
-        target_lines = self._find_makefile_targets(dependencies)
+        target_lines = self._find_makefile_targets()
 
         for l in target_lines:
             print(l)
 
     def generate_jx_workflow(self) -> None:
         
-        dependencies = self._build_dependency_graph()
-        
-        target_lines = self._find_makefile_targets(dependencies)
+        target_lines = self._find_makefile_targets()
 
         # there are three types of lines:
         # 1. all: target1 target2 target3 ...
@@ -640,7 +541,7 @@ class ContractParser:
         print(jx_final)
        
     
-    def _find_makefile_targets(self, dependencies: Dict[str, Set[str]]) -> None:
+    def _find_makefile_targets(self) -> None:
         
         sorted_processes = sorted(self.processes.items(), key=lambda x: int(x[0]) if x[0].isdigit() else 0)
         
@@ -659,12 +560,6 @@ class ContractParser:
                 all_targets.extend(outputs)
                 
                 input_files = []
-                deps = dependencies.get(pid, set())
-                for dep_pid in sorted(deps, key=lambda x: int(x) if x.isdigit() else 0):
-                    dep_process = self.processes.get(dep_pid)
-                    if dep_process and dep_process.file_outputs:
-                        normalized_outputs = [self._normalize_path(f) for f in dep_process.file_outputs]
-                        input_files.extend(normalized_outputs)
                 
                 if process.file_dependencies:
                     normalized_deps = [self._normalize_path(f) for f in process.file_dependencies]
@@ -697,11 +592,6 @@ class ContractParser:
                 all_targets.append(target_name)
                 
                 input_files = []
-                deps = dependencies.get(pid, set())
-                for dep_pid in sorted(deps, key=lambda x: int(x) if x.isdigit() else 0):
-                    dep_process = self.processes.get(dep_pid)
-                    if dep_process and dep_process.file_outputs:
-                        input_files.extend([self._normalize_path(f) for f in dep_process.file_outputs])
                 
                 if process.file_dependencies:
                     input_files.extend([self._normalize_path(f) for f in process.file_dependencies])
@@ -729,120 +619,6 @@ class ContractParser:
         target_lines.insert(0, "all: " + ' '.join([self._normalize_path(f) for f in all_targets]) + "\n")
 
         return target_lines
-
-    
-    
-    def _find_final_processes(self, dependencies: Dict[str, Set[str]]) -> Set[str]:
-        
-        all_processes = set(self.processes.keys())
-        depended_upon = set()
-        
-        for deps in dependencies.values():
-            depended_upon.update(deps)
-        
-        return all_processes - depended_upon
-    
-    def _group_by_executable(self) -> Dict[str, List[str]]:
-        
-        groups = defaultdict(list)
-        for pid, process in self.processes.items():
-            if process.executable:
-                exec_name = os.path.basename(process.executable)
-                groups[exec_name].append(pid)
-        return groups
-    
-    def _build_dependency_graph(self) -> Dict[str, Set[str]]:
-        
-        dependencies = defaultdict(set)
-
-        return dependencies
-        
-        # Map output files to the processes that create them
-        file_producers = defaultdict(set)
-        # Map output directories to the processes that create them  
-        dir_producers = defaultdict(set)
-        
-        # First pass: identify all producers
-        for pid, process in self.processes.items():
-            # Track directory-level outputs
-            for output_dir in process.output_directories:
-                dir_producers[output_dir].add(pid)
-            
-            # Track file-level outputs
-            for file_path in process.file_outputs:
-                file_producers[file_path].add(pid)
-                
-                # Also associate files with their parent directories
-                for output_dir in process.output_directories:
-                    if not file_path.startswith('/'):
-                        # Relative path, combine with output directory
-                        full_path = f"{output_dir}/{file_path}"
-                        file_producers[full_path].add(pid)
-                    else:
-                        file_producers[file_path].add(pid)
-        
-        # find file level dependencies
-        for pid, process in self.processes.items():
-            # Check if this process reads files produced by other processes
-            for read_file in process.file_dependencies:
-                # Direct file match
-                if read_file in file_producers:
-                    for producer_pid in file_producers[read_file]:
-                        if producer_pid != pid and int(producer_pid) < int(pid):
-                            dependencies[pid].add(producer_pid)
-                
-                # Check if read file matches any output directory + file combination
-                for output_dir in dir_producers:
-                    if read_file.startswith(output_dir + '/'):
-                        for producer_pid in dir_producers[output_dir]:
-                            if producer_pid != pid and int(producer_pid) < int(pid):
-                                dependencies[pid].add(producer_pid)
-        
-        # fallback to directory-level dependencies for unmatched cases
-        for pid, process in self.processes.items():
-            for input_dir in process.input_directories:
-                for output_dir, producer_pids in dir_producers.items():
-                    if (input_dir in output_dir or output_dir in input_dir or 
-                        self._paths_overlap(input_dir, output_dir)):
-                        for producer_pid in producer_pids:
-                            if producer_pid != pid and int(producer_pid) < int(pid):
-                                dependencies[pid].add(producer_pid)
-        
-        return dependencies
-    
-    
-    def _paths_overlap(self, path1: str, path2: str) -> bool:
-        
-        p1_parts = path1.strip('/').split('/')
-        p2_parts = path2.strip('/').split('/')
-        
-        min_len = min(len(p1_parts), len(p2_parts))
-        if min_len == 0:
-            return False
-            
-        return p1_parts[:min_len] == p2_parts[:min_len]
-    
-    def _find_execution_stages(self, dependencies: Dict[str, Set[str]]) -> List[Set[str]]:
-        
-        stages = []
-        remaining_processes = set(self.processes.keys())
-        processed = set()
-        
-        while remaining_processes:
-            ready_processes = set()
-            for pid in remaining_processes:
-                if not dependencies[pid] or dependencies[pid].issubset(processed):
-                    ready_processes.add(pid)
-            
-            if not ready_processes:
-                ready_processes = remaining_processes.copy()
-            
-            stages.append(ready_processes)
-            processed.update(ready_processes)
-            remaining_processes -= ready_processes
-        
-        return stages
-
 
 def main():
     parser = argparse.ArgumentParser(description='Parse contract files and generate Makefile dependencies')
