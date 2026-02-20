@@ -9,6 +9,9 @@ from typing import Dict, List, Set, Optional
 import os
 import json
 
+name_comprehension = False
+dag_prune = True
+
 @dataclass
 class ProcessInfo:
     pid: str
@@ -494,27 +497,35 @@ class ContractParser:
             "rules": [rules.__dict__ for rules in rules]
         }
 
-        exec_vars = {}
-
         def varname_from_command(command: str) -> str:
             # split from args
             executable = command.split()[0].strip('"')
             # may be absolute path
             name = executable.split('/')[-1].upper()
             return name
+        
+        def command_args(command: str) -> List[str]:
+            parts = command.split()
+            return parts[1:] if len(parts) > 1 else []
 
-        def swap_for_var(command: str, varname: str) -> str:
+        def swap_for_var(command: str, args: List[str], varname: str) -> str:
             executable = command.split()[0].strip('"')
-            return command.replace(executable, f"{{{varname}}}", 1)
+            new_cmd = command.replace(executable, f"{{{varname}}}", 1)
+            argname = varname + '_ARGLIST'
+            if args:
+                new_cmd = new_cmd.replace(' '.join(args), f"{{{argname}}}", 1)
+            return new_cmd
  
         from inverse_pattern import inverse_pattern_jx_expr
 
+        # create an instance of 'template(expr)' in the jx workflow
         class JxTemplate():
             def __init__(self, expr, varmap=None):
                 qrem = ('KWD_REMOVE_QUOTE_BEFORE', 'KWD_REMOVE_QUOTE_AFTER')
                 qadd = 'KWD_ADD_QUOTE_HERE'
                 self.expr = f'template({qadd}' + str(expr) + f'{qadd})'
                 
+                # example
                 # join([template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT))])
                 if varmap:
                     for var, minmax in varmap.items():
@@ -524,66 +535,107 @@ class ContractParser:
             
                 self.expr = ''.join([qrem[0], self.expr, qrem[1]])
 
-            def __str__(self):
-                return self.expr
+        # use when we are substituting a simple expression outside of a string
+        class JxExpr():
+            def __init__(self, expr):
+                qrem = ('KWD_REMOVE_QUOTE_BEFORE', 'KWD_REMOVE_QUOTE_AFTER')
+                self.expr = str(expr)
+                self.expr = ''.join([qrem[0], self.expr, qrem[1]])
 
-        # replace names with variables. Add to defines when applicable
-        for rule in jx_workflow['rules']:
-            # replace command with template + define
-            command = rule['command'].strip('"')
-            executable = command.split()[0]
+        # remove output files that no other task depends on.
+        # these are generally temporary to the task. If the task cleans them up
+        # then we will have an error when we check if outputs were created
+        if dag_prune:
+            for rule in jx_workflow['rules']:
+                outputs = rule['outputs']
+                new_outputs = []
+                for i, o in enumerate(outputs):
+                    if any(o in r['inputs'] for r in jx_workflow['rules']):
+                        new_outputs.append(o)
+                rule['outputs'] = new_outputs
 
-            name = varname_from_command(executable)
-            exec_vars[name] = executable
-            rule['command'] = JxTemplate(swap_for_var(command, name))
-
-            # inverse pattern files
-            const_inputs, expr_inputs, input_varmap = inverse_pattern_jx_expr(rule['inputs'])
-            const_outputs, expr_outputs, output_varmap = inverse_pattern_jx_expr(rule['outputs'])
-
-            expr_inputs_templated = [JxTemplate(e, varmap=input_varmap[e]) for e in expr_inputs]
-            expr_outputs_templated = [JxTemplate(e, varmap=output_varmap[e]) for e in expr_outputs]
-
-            rule['inputs'] = const_inputs + expr_inputs_templated
-            rule['outputs'] = const_outputs + expr_outputs_templated
-            
-            
-
-
-
+        if name_comprehension:
+            # map of k,v for defines
+            task_vars = {}
+            count_rules = {}
+            # replace names with variables. Add to defines when applicable
+            for rule in jx_workflow['rules']:
+                # replace command with template + define
+                command = rule['command'].strip('"')
+                executable = command.split()[0]
         
-        jx_workflow["define"] = {name: executable for name, executable in exec_vars.items()}
+                name = varname_from_command(executable)
+                args = command_args(command)
 
-        """
-        Example of jx syntax 
-        } for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT)),
-	    {
-		"command": format(
-			"%s output.fasta %s",
-			CAT_BLAST,
-			join([template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT))]),
-		),
-		"inputs": [
-			CAT_BLAST,
-			template("small.fasta.{x}.out") for x in range(ceil(TOTAL_SEQ/SEQ_PER_SPLIT)),
-		],
-        """
+                # swap command and args with variables
+                rule['command'] = JxTemplate(swap_for_var(command, args, name))
 
-        # need to do some non-standard json. no quotes around jx expressions but add inside
+                # the executable may appear more than once with different arguments.
+                # we will remove the duplicate tasks and add an expression to represent them
+                count_rules[name] = count_rules.get(name, []) + [rule]
+                
+                if task_vars.get(name + '_ARGLIST'):
+                    args = task_vars[name + '_ARGLIST'] + [args]
 
+                task_vars[name] = executable
+                task_vars[name + '_ARGLIST'] = [args]
+
+                # inverse pattern files
+                const_inputs, expr_inputs, input_varmap = inverse_pattern_jx_expr(rule['inputs'])
+                const_outputs, expr_outputs, output_varmap = inverse_pattern_jx_expr(rule['outputs'])
+
+                expr_inputs_templated = [JxTemplate(e, varmap=input_varmap[e]) for e in expr_inputs]
+                expr_outputs_templated = [JxTemplate(e, varmap=output_varmap[e]) for e in expr_outputs]
+
+                # the same goes for multiple i/o lists
+                if task_vars.get(name + '_INPUTS'):
+                    expr_inputs_templated = task_vars[name + '_INPUTS'] + [const_inputs + expr_inputs_templated]
+
+                if task_vars.get(name + '_OUTPUTS'):
+                    expr_outputs_templated = task_vars[name + '_OUTPUTS'] + [const_outputs + expr_outputs_templated]
+                    
+                task_vars[name + '_INPUTS'] = [const_inputs + expr_inputs_templated]
+                task_vars[name + '_OUTPUTS'] = [const_outputs + expr_outputs_templated]
+
+                # rule['inputs'] = f'{{{name}_INPUTS}}'
+                # rule['outputs'] = f'{{{name}_OUTPUTS}}'
+                
+            duplicate_rules = [rules for name, rules in count_rules.items() if len(rules) > 1]
+
+            for r in duplicate_rules:
+                count = len(r)
+                for dr in r[1:]:
+                    jx_workflow['rules'].remove(dr)
+
+                therule = r[0]
+                therule["expand"] = count
+                therule['inputs'] = JxExpr(f'{name}_INPUTS[x]')
+                therule['outputs'] = JxExpr(f'{name}_OUTPUTS[x]')
+                
+
+            # map executables and their arguments to defines.
+            jx_workflow["define"] = task_vars
+
+        # allow serialization of jxtemplate 
         class CustomEncoder(json.JSONEncoder):
             def default(self, obj):
                 if isinstance(obj, JxTemplate):
                     return obj.expr
+                if isinstance(obj, JxExpr):
+                    return obj.expr
                 return super().default(obj)
                 
-        json_rep = json.dumps(jx_workflow, indent=4, cls=CustomEncoder)
+        json_rep = json.dumps(jx_workflow, indent=2, cls=CustomEncoder)
 
-        pat_remove_quotes = r'"KWD_REMOVE_QUOTE_BEFORE(.*)KWD_REMOVE_QUOTE_AFTER"'
-        remove_template_quotes = re.sub(pat_remove_quotes, str(r'\1'), json_rep)
+        if name_comprehension:
+            # need to do some non-standard json. no quotes around jx template expressions but add inside
+            pat_remove_quotes = r'"KWD_REMOVE_QUOTE_BEFORE(.*)KWD_REMOVE_QUOTE_AFTER"'
+            remove_template_quotes = re.sub(pat_remove_quotes, str(r'\1'), json_rep)
 
-        pat_add_quotes = r'KWD_ADD_QUOTE_HERE'
-        jx_final = re.sub(pat_add_quotes, '"', remove_template_quotes)
+            pat_add_quotes = r'KWD_ADD_QUOTE_HERE'
+            jx_final = re.sub(pat_add_quotes, '"', remove_template_quotes)
+        else:
+            jx_final = json_rep
 
         print(jx_final)
        
@@ -795,6 +847,8 @@ class ContractParser:
 def main():
     parser = argparse.ArgumentParser(description='Parse contract files and generate Makefile dependencies')
     parser.add_argument('contract_file', help='Path to the contract file to analyze')
+    parser.add_argument('--name-comprehension', action='store_true', help='Use name comprehension for JX workflow generation')
+    parser.add_argument('--dont-prune', action='store_false', help='Leave all created files as outputs, even if the task deletes them.')
     
     args = parser.parse_args()
     
@@ -811,6 +865,12 @@ def main():
     output_file_makeflow = f"{input_base}.makeflow"
     output_file_jx = f"{input_base}.jx"
     
+    global name_comprehension
+    global dag_prune
+
+    dag_prune = args.dont_prune       
+    name_comprehension = args.name_comprehension  
+
     with open(output_file_jx, 'w') as f:
         import sys
         old_stdout = sys.stdout
