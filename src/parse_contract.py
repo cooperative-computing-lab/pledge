@@ -440,8 +440,10 @@ class ContractParser:
         class JxExpr():
             def __init__(self, expr):
                 qrem = ('KWD_REMOVE_QUOTE_BEFORE', 'KWD_REMOVE_QUOTE_AFTER')
+                self.original = expr
                 self.expr = str(expr)
                 self.expr = ''.join([qrem[0], self.expr, qrem[1]])
+
 
         # remove output files that no other task depends on.
         # these are generally temporary to the task. If the task cleans them up
@@ -498,8 +500,8 @@ class ContractParser:
                 task_vars[name + '_INPUTS'] = [const_inputs + expr_inputs_templated]
                 task_vars[name + '_OUTPUTS'] = [const_outputs + expr_outputs_templated]
 
-                # rule['inputs'] = f'{{{name}_INPUTS}}'
-                # rule['outputs'] = f'{{{name}_OUTPUTS}}'
+                rule['inputs'] = JxExpr(f'{{{name}_INPUTS}}')
+                rule['outputs'] = JxExpr(f'{{{name}_OUTPUTS}}')
                 
             duplicate_rules = [rules for name, rules in count_rules.items() if len(rules) > 1]
 
@@ -510,8 +512,8 @@ class ContractParser:
 
                 therule = r[0]
                 therule["expand"] = count
-                therule['inputs'] = JxExpr(f'{name}_INPUTS[x]')
-                therule['outputs'] = JxExpr(f'{name}_OUTPUTS[x]')
+                therule['inputs'] = JxExpr(f"{ therule['inputs'].original + '[x]' }")
+                therule['outputs'] = JxExpr(f"{ therule['outputs'].original + '[x]' }")
                 
 
             # map executables and their arguments to defines.
