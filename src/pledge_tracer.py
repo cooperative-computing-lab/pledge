@@ -162,7 +162,7 @@ class FileAccessNode:
             return True
         return all(b == a + 1 for a, b in zip(offsets, offsets[1:]))
 
-def run_strace(pid_or_cmd):
+def run_strace(pid_or_cmd, separate):
     # if pid_or_cmd.isdigit():
     #     cmd = ['strace', '-f', '-y', '--trace=file,read,write,mmap,getdents64,lseek', '-p', pid_or_cmd]
     # else:
@@ -170,7 +170,12 @@ def run_strace(pid_or_cmd):
 
     # strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone 
 
-    cmd = ['strace', '-f', '-y', '-v', '-s 1024', '--trace=file,read,write,mmap,lseek,clone'] + pid_or_cmd[0].split(' ')
+    if separate:
+        proc = subprocess.Popen(['cat .pledgeproc* 1>&2'], stderr=subprocess.PIPE, text=True, shell=True)
+        print("Collecting strace process outputs")
+        return proc
+
+    cmd = ['strace', '-ff', '-y', '-v', '-s 1024', '--trace=file,read,write,mmap,lseek,clone'] + pid_or_cmd[0].split(' ')
     print("Running command:", ' '.join(pid_or_cmd))
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
     return proc
@@ -247,7 +252,8 @@ def parse_strace_output(strace_lines):
             line_end = ''.join(line.split(' resumed>')[1:])
             line = line_begin.replace(' <unfinished ...>', line_end)
             reconstructed = True
-            #print("Reconstructed line:", line)
+            if 'write' in line:
+                print("Reconstructed line:", line)
 
         m = open_re.search(line)
         if m:
@@ -326,10 +332,11 @@ def parse_strace_output(strace_lines):
             #print("write")
             fd, filename, requested, length = m.groups()
             offset = fd_offsets.get(fd, 0)
+            #print(f"Write to {filename} at offset {offset} with length {length}")
             try:
                 file_tree[filename].add_access('write', offset, int(length))
             except:
-                #print(f"Warning: write to unknown file descriptor {fd} ({filename})")
+                print(f"Warning: write to unknown file descriptor {fd} ({filename})")
                 file_tree[filename] = FileAccessNode(filename)
                 file_tree[filename].add_access('write', offset, int(length))
             continue
@@ -950,6 +957,7 @@ def main():
     parser.add_argument('target', nargs='*', help='Path to executable')
     parser.add_argument('--file', '-f', dest='strace_file', help='Parse strace output from file instead of running strace')
     parser.add_argument('--nopid', '-p', dest='no_pid', help='Do not separate output by PID', action='store_true')
+    parser.add_argument('--trace-separate', dest='trace_separate', help='Run strace with separate output files for each PID', action='store_true')
     #parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
     args = parser.parse_args()
 
@@ -966,7 +974,7 @@ def main():
             print_process_tree(pid_tree, pid_dep)
             sys.stdout = sys.__stdout__
     elif args.target:
-        proc = run_strace(args.target)
+        proc = run_strace(args.target, separate=args.trace_separate)
         try:
             pid_tree, pid_dep = parse_strace_output(proc.stderr)
             output_file = str(args.target[0].strip('./')) + '.contract'
