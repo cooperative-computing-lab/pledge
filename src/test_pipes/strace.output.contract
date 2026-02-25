@@ -1,0 +1,8 @@
+
+#Process Tree:
+├─ PID 0 0 [./output, /usr/bin/rm, /usr/bin/cat, /usr/bin/grep]
+                X </usr> (3 files) [exec: 6]
+                                #	Executable: rm test_output test_output2  ATFDCWD: 
+                                #	Executable: cat test_output  ATFDCWD: 
+                                #	Executable: grep hello  ATFDCWD: 
+CWD:  None

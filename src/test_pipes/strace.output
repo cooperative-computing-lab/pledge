@@ -1,0 +1,555 @@
+execve("./output", ["./output"], ["SHELL=/bin/bash", "SESSION_MANAGER=local/thinkpad:@"..., "QT_ACCESSIBILITY=1", "NVM_RC_VERSION=", "COLORTERM=truecolor", "GCC_RANLIB=/home/scuzee/minicond"..., "XDG_CONFIG_DIRS=/etc/xdg/xdg-ubu"..., "VSCODE_DEBUGPY_ADAPTER_ENDPOINTS"..., "SSH_AGENT_LAUNCHER=gnome-keyring", "NVM_INC=/home/scuzee/.nvm/versio"..., "XDG_MENU_PREFIX=gnome-", "TERM_PROGRAM_VERSION=1.107.0", "GNOME_DESKTOP_SESSION_ID=this-is"..., "CONDA_EXE=/home/scuzee/miniconda"..., "_CE_M=", "build_alias=x86_64-conda-linux-g"..., "CMAKE_ARGS=-DCMAKE_AR=/home/scuz"..., "GPROF=/home/scuzee/miniconda3/en"..., "CONDA_TOOLCHAIN_BUILD=x86_64-con"..., "GNOME_SHELL_SESSION_MODE=ubuntu", "_CONDA_PYTHON_SYSCONFIGDATA_NAME"..., "SSH_AUTH_SOCK=/run/user/1000/key"..., "STRINGS=/home/scuzee/miniconda3/"..., "CPP=/home/scuzee/miniconda3/envs"..., "PYDEVD_DISABLE_FILE_VALIDATION=1", "XMODIFIERS=@im=ibus", "DESKTOP_SESSION=ubuntu", "GTK_MODULES=gail:atk-bridge", "PWD=/home/scuzee/Programming/ple"..., "XDG_SESSION_DESKTOP=ubuntu", "LOGNAME=scuzee", "XDG_SESSION_TYPE=wayland", "CONDA_PREFIX=/home/scuzee/minico"..., "SYSTEMD_EXEC_PID=647341", "CXX=/home/scuzee/miniconda3/envs"..., "CXXFLAGS=-fvisibility-inlines-hi"..., "BUNDLED_DEBUGPY_PATH=/home/scuze"..., "XAUTHORITY=/run/user/1000/.mutte"..., "VSCODE_GIT_ASKPASS_NODE=/usr/sha"..., "CONDA_TOOLCHAIN_HOST=x86_64-cond"..., "DEBUG_CXXFLAGS=-fvisibility-inli"..., "LDFLAGS=-Wl,-O2 -Wl,--sort-commo"..., "HOME=/home/scuzee", "USERNAME=scuzee", "IM_CONFIG_PHASE=1", "LANG=en_US.UTF-8", "DEBUG_CFLAGS=-march=nocona -mtun"..., "LS_COLORS=rs=0:di=01;34:ln=01;36"..., "XDG_CURRENT_DESKTOP=ubuntu:GNOME", "PYTHONSTARTUP=/home/scuzee/.conf"..., "VTE_VERSION=6800", "WAYLAND_DISPLAY=wayland-0", "CXX_FOR_BUILD=/home/scuzee/minic"..., "ELFEDIT=/home/scuzee/miniconda3/"..., "CONDA_PROMPT_MODIFIER=(cctools-d"..., "GIT_ASKPASS=/usr/share/code/reso"..., "CMAKE_PREFIX_PATH=/home/scuzee/m"..., "GNOME_TERMINAL_SCREEN=/org/gnome"..., "CPPFLAGS=-DNDEBUG -D_FORTIFY_SOU"..., "LD=/home/scuzee/miniconda3/envs/"..., "READELF=/home/scuzee/miniconda3/"..., "CHROME_DESKTOP=code.desktop", "GXX=/home/scuzee/miniconda3/envs"..., "NVM_DIR=/home/scuzee/.nvm", "VSCODE_GIT_ASKPASS_EXTRA_ARGS=", "GNOME_SETUP_DISPLAY=:1", "VSCODE_PYTHON_AUTOACTIVATE_GUARD"..., "GCC_AR=/home/scuzee/miniconda3/e"..., "LESSCLOSE=/usr/bin/lesspipe %s %"..., "ADDR2LINE=/home/scuzee/miniconda"..., "XDG_SESSION_CLASS=user", "TERM=xterm-256color", "PYTHON_BASIC_REPL=1", "_CE_CONDA=", "GCC_NM=/home/scuzee/miniconda3/e"..., "SIZE=/home/scuzee/miniconda3/env"..., "HOST=x86_64-conda-linux-gnu", "LESSOPEN=| /usr/bin/lesspipe %s", "CC_FOR_BUILD=/home/scuzee/minico"..., "USER=scuzee", "VSCODE_GIT_IPC_HANDLE=/run/user/"..., "GNOME_TERMINAL_SERVICE=:1.2125", "CONDA_SHLVL=1", "AR=/home/scuzee/miniconda3/envs/"..., "AS=/home/scuzee/miniconda3/envs/"..., "DEBUG_CPPFLAGS=-D_DEBUG -D_FORTI"..., "host_alias=x86_64-conda-linux-gn"..., "DISPLAY=:0", "SHLVL=2", "NVM_CD_FLAGS=", "NM=/home/scuzee/miniconda3/envs/"..., "GCC=/home/scuzee/miniconda3/envs"..., "QT_IM_MODULE=ibus", "LD_GOLD=/home/scuzee/miniconda3/"..., "FC_FONTATIONS=1", "CONDA_PYTHON_EXE=/home/scuzee/mi"..., "XDG_RUNTIME_DIR=/run/user/1000", "CONDA_DEFAULT_ENV=cctools-dev", "OBJCOPY=/home/scuzee/miniconda3/"..., "STRIP=/home/scuzee/miniconda3/en"..., "VSCODE_GIT_ASKPASS_MAIN=/usr/sha"..., "XDG_DATA_DIRS=/usr/share/ubuntu:"..., "GDK_BACKEND=wayland", "OBJDUMP=/home/scuzee/miniconda3/"..., "PATH=/home/scuzee/miniconda3/env"..., "CC=/home/scuzee/miniconda3/envs/"..., "GDMSESSION=ubuntu", "CFLAGS=-march=nocona -mtune=hasw"..., "CXXFILT=/home/scuzee/miniconda3/"..., "DBUS_SESSION_BUS_ADDRESS=unix:pa"..., "BUILD=x86_64-conda-linux-gnu", "NVM_BIN=/home/scuzee/.nvm/versio"..., "RANLIB=/home/scuzee/miniconda3/e"..., "CONDA_BUILD_SYSROOT=/home/scuzee"..., "OLDPWD=/home/scuzee/Programming/"..., "TERM_PROGRAM=vscode", "_=/usr/local/bin/strace"]) = 0
+brk(NULL)                               = 0x651fe8bc0000
+arch_prctl(0x3001 /* ARCH_??? */, 0x7fff765363f0) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7e709a8e8000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+newfstatat(3</etc/ld.so.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=10880247, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=312, st_size=156428, st_atime=1772032592 /* 2026-02-25T10:16:32.456199691-0500 */, st_atime_nsec=456199691, st_mtime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_mtime_nsec=516513193, st_ctime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_ctime_nsec=516513193}, AT_EMPTY_PATH) = 0
+mmap(NULL, 156428, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x7e709a8c1000
+close(3</etc/ld.so.cache>)              = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>
+read(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790734, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=392, st_size=200136, st_atime=1772033310 /* 2026-02-25T10:28:30.850664903-0500 */, st_atime_nsec=850664903, st_mtime=1684262727 /* 2023-05-16T14:45:27-0400 */, st_mtime_nsec=0, st_ctime=1686594947 /* 2023-06-12T14:35:47.959326265-0400 */, st_ctime_nsec=959326265}, AT_EMPTY_PATH) = 0
+mmap(NULL, 203040, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, 0) = 0x7e709a88f000
+mmap(0x7e709a89d000, 69632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, 0xe000) = 0x7e709a89d000
+mmap(0x7e709a8ae000, 57344, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, 0x1f000) = 0x7e709a8ae000
+mmap(0x7e709a8bc000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>, 0x2c000) = 0x7e709a8bc000
+close(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.3>) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+read(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\t\\{\241H\256\312\201f\200\221\367\30\4px"..., 68, 896) = 68
+newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790130, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4344, st_size=2220400, st_atime=1772032592 /* 2026-02-25T10:16:32.463199719-0500 */, st_atime_nsec=463199719, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.979961671-0500 */, st_ctime_nsec=979961671}, AT_EMPTY_PATH) = 0
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0) = 0x7e709a600000
+mprotect(0x7e709a628000, 2023424, PROT_NONE) = 0
+mmap(0x7e709a628000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x28000) = 0x7e709a628000
+mmap(0x7e709a7bd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x1bd000) = 0x7e709a7bd000
+mmap(0x7e709a816000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x215000) = 0x7e709a816000
+mmap(0x7e709a81c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7e709a81c000
+close(3</usr/lib/x86_64-linux-gnu/libc.so.6>) = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7e709a88c000
+arch_prctl(ARCH_SET_FS, 0x7e709a88c740) = 0
+set_tid_address(0x7e709a88ca10)         = 980262
+set_robust_list(0x7e709a88ca20, 24)     = 0
+rseq(0x7e709a88d0e0, 0x20, 0, 0x53053053) = 0
+mprotect(0x7e709a816000, 16384, PROT_READ) = 0
+mprotect(0x7e709a8bc000, 16384, PROT_READ) = 0
+mprotect(0x651fb9275000, 16384, PROT_READ) = 0
+mprotect(0x7e709a922000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x7e709a8c1000, 156428)          = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/dev/tty", O_RDWR|O_NONBLOCK) = 3</dev/tty>
+close(3</dev/tty>)                      = 0
+getrandom("\x69\xc9\xa1\xc4\x53\x5c\x2e\x36", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x651fe8bc0000
+brk(0x651fe8be1000)                     = 0x651fe8be1000
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/locale-archive>
+newfstatat(3</usr/lib/locale/locale-archive>, "", {st_dev=makedev(0x103, 0x2), st_ino=27789917, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=11072, st_size=5712208, st_atime=1772032592 /* 2026-02-25T10:16:32.464199723-0500 */, st_atime_nsec=464199723, st_mtime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_mtime_nsec=561964634, st_ctime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_ctime_nsec=561964634}, AT_EMPTY_PATH) = 0
+mmap(NULL, 5712208, PROT_READ, MAP_PRIVATE, 3</usr/lib/locale/locale-archive>, 0) = 0x7e709a000000
+close(3</usr/lib/locale/locale-archive>) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=28485176, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=56, st_size=27002, st_atime=1772033310 /* 2026-02-25T10:28:30.853664967-0500 */, st_atime_nsec=853664967, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.987961665-0500 */, st_ctime_nsec=987961665}, AT_EMPTY_PATH) = 0
+mmap(NULL, 27002, PROT_READ, MAP_SHARED, 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, 0) = 0x7e709a8e1000
+close(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>) = 0
+futex(0x7e709a81ba6c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+getuid()                                = 1000
+getgid()                                = 1000
+geteuid()                               = 1000
+getegid()                               = 1000
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+ioctl(-1, TIOCGPGRP, 0x7fff765362e4)    = -1 EBADF (Bad file descriptor)
+sysinfo({uptime=4670124, loads=[10496, 17056, 26080], totalram=16477138944, freeram=1093722112, sharedram=1353744384, bufferram=242659328, totalswap=2147479552, freeswap=7319552, procs=1839, totalhigh=0, freehigh=0, mem_unit=1}) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+uname({sysname="Linux", nodename="thinkpad", release="6.8.0-90-generic", version="#91~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 15:20:45 UTC 2", machine="x86_64", domainname="(none)"}) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming/pledge/src/test_pipes", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_mtime_nsec=885085302, st_ctime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_ctime_nsec=885085302}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, ".", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_mtime_nsec=885085302, st_ctime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_ctime_nsec=885085302}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home", {st_dev=makedev(0x103, 0x2), st_ino=28573697, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1771949334 /* 2026-02-24T11:08:54.149347651-0500 */, st_atime_nsec=149347651, st_mtime=1652566928 /* 2022-05-14T18:22:08.301506571-0400 */, st_mtime_nsec=301506571, st_ctime=1652566928 /* 2022-05-14T18:22:08.301506571-0400 */, st_ctime_nsec=301506571}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee", {st_dev=makedev(0x103, 0x2), st_ino=28577358, st_mode=S_IFDIR|0750, st_nlink=75, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037102 /* 2026-02-25T11:31:42.838647901-0500 */, st_atime_nsec=838647901, st_mtime=1772035219 /* 2026-02-25T11:00:19.294421861-0500 */, st_mtime_nsec=294421861, st_ctime=1772035219 /* 2026-02-25T11:00:19.294421861-0500 */, st_ctime_nsec=294421861}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming", {st_dev=makedev(0x103, 0x2), st_ino=28839487, st_mode=S_IFDIR|0775, st_nlink=28, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772034068 /* 2026-02-25T10:41:08.400636496-0500 */, st_atime_nsec=400636496, st_mtime=1772034013 /* 2026-02-25T10:40:13.939414513-0500 */, st_mtime_nsec=939414513, st_ctime=1772034013 /* 2026-02-25T10:40:13.939414513-0500 */, st_ctime_nsec=939414513}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming/pledge", {st_dev=makedev(0x103, 0x2), st_ino=29099358, st_mode=S_IFDIR|0775, st_nlink=5, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772034389 /* 2026-02-25T10:46:29.095916098-0500 */, st_atime_nsec=95916098, st_mtime=1771971629 /* 2026-02-24T17:20:29.429939686-0500 */, st_mtime_nsec=429939686, st_ctime=1771971629 /* 2026-02-24T17:20:29.429939686-0500 */, st_ctime_nsec=429939686}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming/pledge/src", {st_dev=makedev(0x103, 0x2), st_ino=29110096, st_mode=S_IFDIR|0775, st_nlink=7, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772035256 /* 2026-02-25T11:00:56.016168433-0500 */, st_atime_nsec=16168433, st_mtime=1772035255 /* 2026-02-25T11:00:55.435172219-0500 */, st_mtime_nsec=435172219, st_ctime=1772035255 /* 2026-02-25T11:00:55.435172219-0500 */, st_ctime_nsec=435172219}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming/pledge/src/test_pipes", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_mtime_nsec=885085302, st_ctime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_ctime_nsec=885085302}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/Programming/pledge/src", {st_dev=makedev(0x103, 0x2), st_ino=29110096, st_mode=S_IFDIR|0775, st_nlink=7, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772035256 /* 2026-02-25T11:00:56.016168433-0500 */, st_atime_nsec=16168433, st_mtime=1772035255 /* 2026-02-25T11:00:55.435172219-0500 */, st_mtime_nsec=435172219, st_ctime=1772035255 /* 2026-02-25T11:00:55.435172219-0500 */, st_ctime_nsec=435172219}, 0) = 0
+getpid()                                = 980262
+getppid()                               = 980260
+getpid()                                = 980262
+getppid()                               = 980260
+getpid()                                = 980262
+getppid()                               = 980260
+getpgrp()                               = 980260
+ioctl(2</dev/pts/1>, TIOCGPGRP, [980260]) = 0
+rt_sigaction(SIGCHLD, {sa_handler=0x651fb918ad70, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, 8) = 0
+prlimit64(0, RLIMIT_NPROC, NULL, {rlim_cur=62532, rlim_max=62532}) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "./output", O_RDONLY) = 3</home/scuzee/Programming/pledge/src/test_pipes/output>
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "./output", {st_dev=makedev(0x103, 0x2), st_ino=29635386, st_mode=S_IFREG|0775, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=115, st_atime=1772035333 /* 2026-02-25T11:02:13.674723350-0500 */, st_atime_nsec=674723350, st_mtime=1772035317 /* 2026-02-25T11:01:57.956804100-0500 */, st_mtime_nsec=956804100, st_ctime=1772035331 /* 2026-02-25T11:02:11.408734715-0500 */, st_ctime_nsec=408734715}, 0) = 0
+ioctl(3</home/scuzee/Programming/pledge/src/test_pipes/output>, TCGETS, 0x7fff76536280) = -1 ENOTTY (Inappropriate ioctl for device)
+lseek(3</home/scuzee/Programming/pledge/src/test_pipes/output>, 0, SEEK_CUR) = 0
+read(3</home/scuzee/Programming/pledge/src/test_pipes/output>, "#!/bin/bash\n\nrm test_output test"..., 80) = 80
+lseek(3</home/scuzee/Programming/pledge/src/test_pipes/output>, 0, SEEK_SET) = 0
+prlimit64(0, RLIMIT_NOFILE, NULL, {rlim_cur=1024*1024, rlim_max=1024*1024}) = 0
+fcntl(255, F_GETFD)                     = -1 EBADF (Bad file descriptor)
+dup2(3</home/scuzee/Programming/pledge/src/test_pipes/output>, 255) = 255</home/scuzee/Programming/pledge/src/test_pipes/output>
+close(3</home/scuzee/Programming/pledge/src/test_pipes/output>) = 0
+fcntl(255</home/scuzee/Programming/pledge/src/test_pipes/output>, F_SETFD, FD_CLOEXEC) = 0
+fcntl(255</home/scuzee/Programming/pledge/src/test_pipes/output>, F_GETFL) = 0x8000 (flags O_RDONLY|O_LARGEFILE)
+newfstatat(255</home/scuzee/Programming/pledge/src/test_pipes/output>, "", {st_dev=makedev(0x103, 0x2), st_ino=29635386, st_mode=S_IFREG|0775, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=115, st_atime=1772035333 /* 2026-02-25T11:02:13.674723350-0500 */, st_atime_nsec=674723350, st_mtime=1772035317 /* 2026-02-25T11:01:57.956804100-0500 */, st_mtime_nsec=956804100, st_ctime=1772035331 /* 2026-02-25T11:02:11.408734715-0500 */, st_ctime_nsec=408734715}, AT_EMPTY_PATH) = 0
+lseek(255</home/scuzee/Programming/pledge/src/test_pipes/output>, 0, SEEK_CUR) = 0
+read(255</home/scuzee/Programming/pledge/src/test_pipes/output>, "#!/bin/bash\n\nrm test_output test"..., 115) = 115
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, ".", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_mtime_nsec=885085302, st_ctime=1772037506 /* 2026-02-25T11:38:26.885085302-0500 */, st_ctime_nsec=885085302}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/envs/cctools-dev/bin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.nvm/versions/node/v22.21.0/bin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/condabin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.local/bin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/bin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/sbin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/bin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/sbin/rm", 0x7fff76535d70, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/rm", X_OK)             = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/rm", R_OK)             = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/rm", X_OK)             = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/rm", {st_dev=makedev(0x103, 0x2), st_ino=27807999, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=120, st_size=59912, st_atime=1772029298 /* 2026-02-25T09:21:38.278941802-0500 */, st_atime_nsec=278941802, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/rm", R_OK)             = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigprocmask(SIG_BLOCK, [INT TERM CHLD], [], 8) = 0
+lseek(255</home/scuzee/Programming/pledge/src/test_pipes/output>, -74, SEEK_CUR) = 41
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7e709a88ca10) = 980263
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigaction(SIGINT, {sa_handler=0x651fb918ce40, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 980263
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=0x651fb918ce40, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+ioctl(2</dev/pts/1>, TIOCGWINSZ, {ws_row=13, ws_col=192, ws_xpixel=0, ws_ypixel=0}) = 0
+ioctl(1</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+getuid()                                = 1000
+geteuid()                               = 1000
+getgid()                                = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+geteuid()                               = 1000
+getgid()                                = 1000
+getegid()                               = 1000
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.terminfo", 0x651fe8bdea00, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/etc/terminfo", {st_dev=makedev(0x103, 0x2), st_ino=10879095, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1757641827 /* 2025-09-11T21:50:27.805795629-0400 */, st_atime_nsec=805795629, st_mtime=1686595338 /* 2023-06-12T14:42:18.315474891-0400 */, st_mtime_nsec=315474891, st_ctime=1686595338 /* 2023-06-12T14:42:18.315474891-0400 */, st_ctime_nsec=315474891}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/terminfo", {st_dev=makedev(0x103, 0x2), st_ino=27788909, st_mode=S_IFDIR|0755, st_nlink=16, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1757641828 /* 2025-09-11T21:50:28.962795553-0400 */, st_atime_nsec=962795553, st_mtime=1642438924 /* 2022-01-17T12:02:04-0500 */, st_mtime_nsec=0, st_ctime=1652566886 /* 2022-05-14T18:21:26.909502576-0400 */, st_ctime_nsec=909502576}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/terminfo", {st_dev=makedev(0x103, 0x2), st_ino=28704952, st_mode=S_IFDIR|0755, st_nlink=44, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1757641831 /* 2025-09-11T21:50:31.922795359-0400 */, st_atime_nsec=922795359, st_mtime=1665264130 /* 2022-10-08T17:22:10.335146230-0400 */, st_mtime_nsec=335146230, st_ctime=1665264130 /* 2022-10-08T17:22:10.335146230-0400 */, st_ctime_nsec=335146230}, 0) = 0
+access("/etc/terminfo/x/xterm-256color", R_OK) = -1 ENOENT (No such file or directory)
+access("/lib/terminfo/x/xterm-256color", R_OK) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/terminfo/x/xterm-256color", O_RDONLY) = 3</usr/lib/terminfo/x/xterm-256color>
+newfstatat(3</usr/lib/terminfo/x/xterm-256color>, "", {st_dev=makedev(0x103, 0x2), st_ino=28449216, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=3852, st_atime=1771970017 /* 2026-02-24T16:53:37.458266455-0500 */, st_atime_nsec=458266455, st_mtime=1684262727 /* 2023-05-16T14:45:27-0400 */, st_mtime_nsec=0, st_ctime=1686595338 /* 2023-06-12T14:42:18.263473972-0400 */, st_ctime_nsec=263473972}, AT_EMPTY_PATH) = 0
+read(3</usr/lib/terminfo/x/xterm-256color>, "\36\2%\0&\0\17\0\235\1Z\6xterm-256color|xterm"..., 32768) = 3852
+read(3</usr/lib/terminfo/x/xterm-256color>, "", 28672) = 0
+brk(0x651fe8c02000)                     = 0x651fe8c02000
+close(3</usr/lib/terminfo/x/xterm-256color>) = 0
+ioctl(1</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+ioctl(1</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+ioctl(1</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+ioctl(1</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+ioctl(1</dev/pts/1>, TIOCGWINSZ, {ws_row=13, ws_col=192, ws_xpixel=0, ws_ypixel=0}) = 0
+ioctl(0</dev/pts/1>, TIOCGWINSZ, {ws_row=13, ws_col=192, ws_xpixel=0, ws_ypixel=0}) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=980263, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+wait4(-1, 0x7fff76535110, WNOHANG, NULL) = -1 ECHILD (No child processes)
+rt_sigreturn({mask=[]})                 = 0
+read(255</home/scuzee/Programming/pledge/src/test_pipes/output>, "\necho \"hello\" > test_output\n\ncat"..., 115) = 74
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</home/scuzee/Programming/pledge/src/test_pipes/test_output>
+fcntl(1</dev/pts/1>, F_GETFD)           = 0
+fcntl(1</dev/pts/1>, F_DUPFD, 10)       = 10</dev/pts/1>
+fcntl(1</dev/pts/1>, F_GETFD)           = 0
+fcntl(10</dev/pts/1>, F_SETFD, FD_CLOEXEC) = 0
+dup2(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>, 1</dev/pts/1>) = 1</home/scuzee/Programming/pledge/src/test_pipes/test_output>
+close(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>) = 0
+newfstatat(1</home/scuzee/Programming/pledge/src/test_pipes/test_output>, "", {st_dev=makedev(0x103, 0x2), st_ino=29635387, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_atime_nsec=892085298, st_mtime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_mtime_nsec=892085298, st_ctime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_ctime_nsec=892085298}, AT_EMPTY_PATH) = 0
+write(1</home/scuzee/Programming/pledge/src/test_pipes/test_output>, "hello\n", 6) = 6
+dup2(10</dev/pts/1>, 1</home/scuzee/Programming/pledge/src/test_pipes/test_output>) = 1</dev/pts/1>
+fcntl(10</dev/pts/1>, F_GETFD)          = 0x1 (flags FD_CLOEXEC)
+close(10</dev/pts/1>)                   = 0
+read(255</home/scuzee/Programming/pledge/src/test_pipes/output>, "", 115) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+pipe2([3<pipe:[6759153]>, 4<pipe:[6759153]>], 0) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [CHLD], 8) = 0
+rt_sigprocmask(SIG_BLOCK, [INT TERM CHLD], [CHLD], 8) = 0
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7e709a88ca10) = 980264
+rt_sigprocmask(SIG_SETMASK, [CHLD], NULL, 8) = 0
+close(4<pipe:[6759153]>)                = 0
+close(4)                                = -1 EBADF (Bad file descriptor)
+rt_sigprocmask(SIG_BLOCK, NULL, [CHLD], 8) = 0
+rt_sigprocmask(SIG_BLOCK, [INT TERM CHLD], [CHLD], 8) = 0
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7e709a88ca10) = 980265
+rt_sigprocmask(SIG_SETMASK, [CHLD], NULL, 8) = 0
+close(3<pipe:[6759153]>)                = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [CHLD], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [CHLD], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [CHLD], 8) = 0
+rt_sigaction(SIGINT, {sa_handler=0x651fb918ce40, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 980264
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 980265
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=0x651fb918ce40, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+ioctl(2</dev/pts/1>, TIOCGWINSZ, {ws_row=13, ws_col=192, ws_xpixel=0, ws_ypixel=0}) = 0
+rt_sigprocmask(SIG_SETMASK, [CHLD], NULL, 8) = 0
+close(3)                                = -1 EBADF (Bad file descriptor)
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=980264, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+wait4(-1, 0x7fff765351d0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+rt_sigreturn({mask=[]})                 = 0
+read(255</home/scuzee/Programming/pledge/src/test_pipes/output>, "", 115) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+set_robust_list(0x7e709a88ca20, 24)     = 0
+getpid()                                = 980263
+close(255</home/scuzee/Programming/pledge/src/test_pipes/output>) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=0x651fb918ad70, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, 8) = 0
+execve("/usr/bin/rm", ["rm", "test_output", "test_output2"], ["SHELL=/bin/bash", "SESSION_MANAGER=local/thinkpad:@"..., "QT_ACCESSIBILITY=1", "NVM_RC_VERSION=", "COLORTERM=truecolor", "GCC_RANLIB=/home/scuzee/minicond"..., "XDG_CONFIG_DIRS=/etc/xdg/xdg-ubu"..., "VSCODE_DEBUGPY_ADAPTER_ENDPOINTS"..., "SSH_AGENT_LAUNCHER=gnome-keyring", "NVM_INC=/home/scuzee/.nvm/versio"..., "XDG_MENU_PREFIX=gnome-", "TERM_PROGRAM_VERSION=1.107.0", "GNOME_DESKTOP_SESSION_ID=this-is"..., "CONDA_EXE=/home/scuzee/miniconda"..., "_CE_M=", "build_alias=x86_64-conda-linux-g"..., "CMAKE_ARGS=-DCMAKE_AR=/home/scuz"..., "GPROF=/home/scuzee/miniconda3/en"..., "CONDA_TOOLCHAIN_BUILD=x86_64-con"..., "GNOME_SHELL_SESSION_MODE=ubuntu", "_CONDA_PYTHON_SYSCONFIGDATA_NAME"..., "SSH_AUTH_SOCK=/run/user/1000/key"..., "STRINGS=/home/scuzee/miniconda3/"..., "CPP=/home/scuzee/miniconda3/envs"..., "PYDEVD_DISABLE_FILE_VALIDATION=1", "XMODIFIERS=@im=ibus", "DESKTOP_SESSION=ubuntu", "GTK_MODULES=gail:atk-bridge", "PWD=/home/scuzee/Programming/ple"..., "LOGNAME=scuzee", "XDG_SESSION_DESKTOP=ubuntu", "XDG_SESSION_TYPE=wayland", "CONDA_PREFIX=/home/scuzee/minico"..., "SYSTEMD_EXEC_PID=647341", "CXX=/home/scuzee/miniconda3/envs"..., "CXXFLAGS=-fvisibility-inlines-hi"..., "_=/usr/bin/rm", "BUNDLED_DEBUGPY_PATH=/home/scuze"..., "XAUTHORITY=/run/user/1000/.mutte"..., "VSCODE_GIT_ASKPASS_NODE=/usr/sha"..., "CONDA_TOOLCHAIN_HOST=x86_64-cond"..., "DEBUG_CXXFLAGS=-fvisibility-inli"..., "LDFLAGS=-Wl,-O2 -Wl,--sort-commo"..., "HOME=/home/scuzee", "USERNAME=scuzee", "IM_CONFIG_PHASE=1", "LANG=en_US.UTF-8", "LS_COLORS=rs=0:di=01;34:ln=01;36"..., "DEBUG_CFLAGS=-march=nocona -mtun"..., "XDG_CURRENT_DESKTOP=ubuntu:GNOME", "PYTHONSTARTUP=/home/scuzee/.conf"..., "VTE_VERSION=6800", "WAYLAND_DISPLAY=wayland-0", "CXX_FOR_BUILD=/home/scuzee/minic"..., "ELFEDIT=/home/scuzee/miniconda3/"..., "CONDA_PROMPT_MODIFIER=(cctools-d"..., "GIT_ASKPASS=/usr/share/code/reso"..., "CMAKE_PREFIX_PATH=/home/scuzee/m"..., "GNOME_TERMINAL_SCREEN=/org/gnome"..., "CPPFLAGS=-DNDEBUG -D_FORTIFY_SOU"..., "LD=/home/scuzee/miniconda3/envs/"..., "READELF=/home/scuzee/miniconda3/"..., "CHROME_DESKTOP=code.desktop", "GXX=/home/scuzee/miniconda3/envs"..., "NVM_DIR=/home/scuzee/.nvm", "VSCODE_GIT_ASKPASS_EXTRA_ARGS=", "GNOME_SETUP_DISPLAY=:1", "VSCODE_PYTHON_AUTOACTIVATE_GUARD"..., "GCC_AR=/home/scuzee/miniconda3/e"..., "LESSCLOSE=/usr/bin/lesspipe %s %"..., "XDG_SESSION_CLASS=user", "ADDR2LINE=/home/scuzee/miniconda"..., "TERM=xterm-256color", "PYTHON_BASIC_REPL=1", "_CE_CONDA=", "SIZE=/home/scuzee/miniconda3/env"..., "GCC_NM=/home/scuzee/miniconda3/e"..., "HOST=x86_64-conda-linux-gnu", "LESSOPEN=| /usr/bin/lesspipe %s", "CC_FOR_BUILD=/home/scuzee/minico"..., "USER=scuzee", "VSCODE_GIT_IPC_HANDLE=/run/user/"..., "GNOME_TERMINAL_SERVICE=:1.2125", "CONDA_SHLVL=1", "AR=/home/scuzee/miniconda3/envs/"..., "AS=/home/scuzee/miniconda3/envs/"..., "DEBUG_CPPFLAGS=-D_DEBUG -D_FORTI"..., "host_alias=x86_64-conda-linux-gn"..., "DISPLAY=:0", "SHLVL=3", "NVM_CD_FLAGS=", "NM=/home/scuzee/miniconda3/envs/"..., "GCC=/home/scuzee/miniconda3/envs"..., "QT_IM_MODULE=ibus", "LD_GOLD=/home/scuzee/miniconda3/"..., "CONDA_PYTHON_EXE=/home/scuzee/mi"..., "FC_FONTATIONS=1", "XDG_RUNTIME_DIR=/run/user/1000", "CONDA_DEFAULT_ENV=cctools-dev", "OBJCOPY=/home/scuzee/miniconda3/"..., "VSCODE_GIT_ASKPASS_MAIN=/usr/sha"..., "STRIP=/home/scuzee/miniconda3/en"..., "XDG_DATA_DIRS=/usr/share/ubuntu:"..., "GDK_BACKEND=wayland", "OBJDUMP=/home/scuzee/miniconda3/"..., "PATH=/home/scuzee/miniconda3/env"..., "GDMSESSION=ubuntu", "CC=/home/scuzee/miniconda3/envs/"..., "CFLAGS=-march=nocona -mtune=hasw"..., "CXXFILT=/home/scuzee/miniconda3/"..., "DBUS_SESSION_BUS_ADDRESS=unix:pa"..., "BUILD=x86_64-conda-linux-gnu", "NVM_BIN=/home/scuzee/.nvm/versio"..., "RANLIB=/home/scuzee/miniconda3/e"..., "CONDA_BUILD_SYSROOT=/home/scuzee"..., "OLDPWD=/home/scuzee/Programming/"..., "TERM_PROGRAM=vscode"]) = 0
+brk(NULL)                               = 0x5f4417cf1000
+arch_prctl(0x3001 /* ARCH_??? */, 0x7ffdcb11dbd0) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c56a393a000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+newfstatat(3</etc/ld.so.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=10880247, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=312, st_size=156428, st_atime=1772032592 /* 2026-02-25T10:16:32.456199691-0500 */, st_atime_nsec=456199691, st_mtime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_mtime_nsec=516513193, st_ctime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_ctime_nsec=516513193}, AT_EMPTY_PATH) = 0
+mmap(NULL, 156428, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x7c56a3913000
+close(3</etc/ld.so.cache>)              = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+read(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\t\\{\241H\256\312\201f\200\221\367\30\4px"..., 68, 896) = 68
+newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790130, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4344, st_size=2220400, st_atime=1772032592 /* 2026-02-25T10:16:32.463199719-0500 */, st_atime_nsec=463199719, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.979961671-0500 */, st_ctime_nsec=979961671}, AT_EMPTY_PATH) = 0
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0) = 0x7c56a3600000
+mprotect(0x7c56a3628000, 2023424, PROT_NONE) = 0
+mmap(0x7c56a3628000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x28000) = 0x7c56a3628000
+mmap(0x7c56a37bd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x1bd000) = 0x7c56a37bd000
+mmap(0x7c56a3816000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x215000) = 0x7c56a3816000
+mmap(0x7c56a381c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7c56a381c000
+close(3</usr/lib/x86_64-linux-gnu/libc.so.6>) = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c56a3910000
+arch_prctl(ARCH_SET_FS, 0x7c56a3910740) = 0
+set_tid_address(0x7c56a3910a10)         = 980263
+set_robust_list(0x7c56a3910a20, 24)     = 0
+rseq(0x7c56a39110e0, 0x20, 0, 0x53053053) = 0
+mprotect(0x7c56a3816000, 16384, PROT_READ) = 0
+mprotect(0x5f43f38ec000, 4096, PROT_READ) = 0
+mprotect(0x7c56a3974000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x7c56a3913000, 156428)          = 0
+getrandom("\x22\x81\x2e\x91\x39\x93\xd2\x87", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x5f4417cf1000
+brk(0x5f4417d12000)                     = 0x5f4417d12000
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/locale-archive>
+newfstatat(3</usr/lib/locale/locale-archive>, "", {st_dev=makedev(0x103, 0x2), st_ino=27789917, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=11072, st_size=5712208, st_atime=1772032592 /* 2026-02-25T10:16:32.464199723-0500 */, st_atime_nsec=464199723, st_mtime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_mtime_nsec=561964634, st_ctime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_ctime_nsec=561964634}, AT_EMPTY_PATH) = 0
+mmap(NULL, 5712208, PROT_READ, MAP_PRIVATE, 3</usr/lib/locale/locale-archive>, 0) = 0x7c56a3000000
+close(3</usr/lib/locale/locale-archive>) = 0
+ioctl(0</dev/pts/1>, TCGETS, {c_iflag=BRKINT|ICRNL|IXON|IXANY|IMAXBEL|IUTF8, c_oflag=NL0|CR0|TAB0|BS0|VT0|FF0|OPOST|ONLCR, c_cflag=B38400|CS8|CREAD|HUPCL, c_lflag=ISIG|ICANON|ECHO|ECHOE|ECHOK|IEXTEN|ECHOCTL|ECHOKE, c_line=N_TTY, c_cc=[[VINTR]=0x3, [VQUIT]=0x1c, [VERASE]=0x7f, [VKILL]=0x15, [VEOF]=0x4, [VTIME]=0, [VMIN]=0x1, [VSWTC]=0, [VSTART]=0x11, [VSTOP]=0x13, [VSUSP]=0x1a, [VEOL]=0xff, [VREPRINT]=0x12, [VDISCARD]=0xf, [VWERASE]=0x17, [VLNEXT]=0x16, [VEOL2]=0xff, [17]=0, [18]=0]}) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", {st_dev=makedev(0x103, 0x2), st_ino=29635387, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=6, st_atime=1772037092 /* 2026-02-25T11:31:32.495673578-0500 */, st_atime_nsec=495673578, st_mtime=1772037092 /* 2026-02-25T11:31:32.492673586-0500 */, st_mtime_nsec=492673586, st_ctime=1772037092 /* 2026-02-25T11:31:32.492673586-0500 */, st_ctime_nsec=492673586}, AT_SYMLINK_NOFOLLOW) = 0
+geteuid()                               = 1000
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", {st_dev=makedev(0x103, 0x2), st_ino=29635387, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=6, st_atime=1772037092 /* 2026-02-25T11:31:32.495673578-0500 */, st_atime_nsec=495673578, st_mtime=1772037092 /* 2026-02-25T11:31:32.492673586-0500 */, st_mtime_nsec=492673586, st_ctime=1772037092 /* 2026-02-25T11:31:32.492673586-0500 */, st_ctime_nsec=492673586}, AT_SYMLINK_NOFOLLOW) = 0
+faccessat2(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", W_OK, AT_EACCESS) = 0
+unlinkat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output2", {st_dev=makedev(0x103, 0x2), st_ino=29635398, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=6, st_atime=1772037092 /* 2026-02-25T11:31:32.494673581-0500 */, st_atime_nsec=494673581, st_mtime=1772037092 /* 2026-02-25T11:31:32.497673573-0500 */, st_mtime_nsec=497673573, st_ctime=1772037092 /* 2026-02-25T11:31:32.497673573-0500 */, st_ctime_nsec=497673573}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output2", {st_dev=makedev(0x103, 0x2), st_ino=29635398, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=6, st_atime=1772037092 /* 2026-02-25T11:31:32.494673581-0500 */, st_atime_nsec=494673581, st_mtime=1772037092 /* 2026-02-25T11:31:32.497673573-0500 */, st_mtime_nsec=497673573, st_ctime=1772037092 /* 2026-02-25T11:31:32.497673573-0500 */, st_ctime_nsec=497673573}, AT_SYMLINK_NOFOLLOW) = 0
+faccessat2(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output2", W_OK, AT_EACCESS) = 0
+unlinkat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output2", 0) = 0
+lseek(0</dev/pts/1>, 0, SEEK_CUR)       = -1 ESPIPE (Illegal seek)
+close(0</dev/pts/1>)                    = 0
+close(1</dev/pts/1>)                    = 0
+close(2</dev/pts/1>)                    = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+set_robust_list(0x7e709a88ca20, 24)     = 0
+getpid()                                = 980264
+close(255</home/scuzee/Programming/pledge/src/test_pipes/output>) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+close(3<pipe:[6759153]>)                = 0
+dup2(4<pipe:[6759153]>, 1</dev/pts/1>)  = 1<pipe:[6759153]>
+close(4<pipe:[6759153]>)                = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, ".", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_mtime_nsec=893085298, st_ctime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_ctime_nsec=893085298}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/envs/cctools-dev/bin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.nvm/versions/node/v22.21.0/bin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/condabin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.local/bin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/bin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/sbin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/bin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/sbin/cat", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/cat", X_OK)            = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/cat", R_OK)            = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/cat", X_OK)            = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/cat", {st_dev=makedev(0x103, 0x2), st_ino=27787940, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35288, st_atime=1772036161 /* 2026-02-25T11:16:01.454005747-0500 */, st_atime_nsec=454005747, st_mtime=1707363999 /* 2024-02-07T22:46:39-0500 */, st_mtime_nsec=0, st_ctime=1751995051 /* 2025-07-08T13:17:31.264934924-0400 */, st_ctime_nsec=264934924}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/cat", R_OK)            = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=0x651fb918ad70, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, 8) = 0
+execve("/usr/bin/cat", ["cat", "test_output"], ["SHELL=/bin/bash", "SESSION_MANAGER=local/thinkpad:@"..., "QT_ACCESSIBILITY=1", "NVM_RC_VERSION=", "COLORTERM=truecolor", "GCC_RANLIB=/home/scuzee/minicond"..., "XDG_CONFIG_DIRS=/etc/xdg/xdg-ubu"..., "VSCODE_DEBUGPY_ADAPTER_ENDPOINTS"..., "SSH_AGENT_LAUNCHER=gnome-keyring", "NVM_INC=/home/scuzee/.nvm/versio"..., "XDG_MENU_PREFIX=gnome-", "TERM_PROGRAM_VERSION=1.107.0", "GNOME_DESKTOP_SESSION_ID=this-is"..., "CONDA_EXE=/home/scuzee/miniconda"..., "_CE_M=", "build_alias=x86_64-conda-linux-g"..., "CMAKE_ARGS=-DCMAKE_AR=/home/scuz"..., "GPROF=/home/scuzee/miniconda3/en"..., "CONDA_TOOLCHAIN_BUILD=x86_64-con"..., "GNOME_SHELL_SESSION_MODE=ubuntu", "_CONDA_PYTHON_SYSCONFIGDATA_NAME"..., "SSH_AUTH_SOCK=/run/user/1000/key"..., "STRINGS=/home/scuzee/miniconda3/"..., "CPP=/home/scuzee/miniconda3/envs"..., "PYDEVD_DISABLE_FILE_VALIDATION=1", "XMODIFIERS=@im=ibus", "DESKTOP_SESSION=ubuntu", "GTK_MODULES=gail:atk-bridge", "PWD=/home/scuzee/Programming/ple"..., "LOGNAME=scuzee", "XDG_SESSION_DESKTOP=ubuntu", "XDG_SESSION_TYPE=wayland", "CONDA_PREFIX=/home/scuzee/minico"..., "SYSTEMD_EXEC_PID=647341", "CXX=/home/scuzee/miniconda3/envs"..., "CXXFLAGS=-fvisibility-inlines-hi"..., "BUNDLED_DEBUGPY_PATH=/home/scuze"..., "XAUTHORITY=/run/user/1000/.mutte"..., "VSCODE_GIT_ASKPASS_NODE=/usr/sha"..., "CONDA_TOOLCHAIN_HOST=x86_64-cond"..., "DEBUG_CXXFLAGS=-fvisibility-inli"..., "LDFLAGS=-Wl,-O2 -Wl,--sort-commo"..., "HOME=/home/scuzee", "USERNAME=scuzee", "IM_CONFIG_PHASE=1", "LANG=en_US.UTF-8", "LS_COLORS=rs=0:di=01;34:ln=01;36"..., "DEBUG_CFLAGS=-march=nocona -mtun"..., "XDG_CURRENT_DESKTOP=ubuntu:GNOME", "PYTHONSTARTUP=/home/scuzee/.conf"..., "VTE_VERSION=6800", "WAYLAND_DISPLAY=wayland-0", "CXX_FOR_BUILD=/home/scuzee/minic"..., "ELFEDIT=/home/scuzee/miniconda3/"..., "CONDA_PROMPT_MODIFIER=(cctools-d"..., "GIT_ASKPASS=/usr/share/code/reso"..., "CMAKE_PREFIX_PATH=/home/scuzee/m"..., "GNOME_TERMINAL_SCREEN=/org/gnome"..., "CPPFLAGS=-DNDEBUG -D_FORTIFY_SOU"..., "LD=/home/scuzee/miniconda3/envs/"..., "READELF=/home/scuzee/miniconda3/"..., "CHROME_DESKTOP=code.desktop", "GXX=/home/scuzee/miniconda3/envs"..., "NVM_DIR=/home/scuzee/.nvm", "VSCODE_GIT_ASKPASS_EXTRA_ARGS=", "GNOME_SETUP_DISPLAY=:1", "VSCODE_PYTHON_AUTOACTIVATE_GUARD"..., "GCC_AR=/home/scuzee/miniconda3/e"..., "LESSCLOSE=/usr/bin/lesspipe %s %"..., "XDG_SESSION_CLASS=user", "ADDR2LINE=/home/scuzee/miniconda"..., "TERM=xterm-256color", "PYTHON_BASIC_REPL=1", "_CE_CONDA=", "SIZE=/home/scuzee/miniconda3/env"..., "GCC_NM=/home/scuzee/miniconda3/e"..., "HOST=x86_64-conda-linux-gnu", "LESSOPEN=| /usr/bin/lesspipe %s", "CC_FOR_BUILD=/home/scuzee/minico"..., "USER=scuzee", "VSCODE_GIT_IPC_HANDLE=/run/user/"..., "GNOME_TERMINAL_SERVICE=:1.2125", "CONDA_SHLVL=1", "AR=/home/scuzee/miniconda3/envs/"..., "AS=/home/scuzee/miniconda3/envs/"..., "DEBUG_CPPFLAGS=-D_DEBUG -D_FORTI"..., "host_alias=x86_64-conda-linux-gn"..., "DISPLAY=:0", "SHLVL=2", "NVM_CD_FLAGS=", "NM=/home/scuzee/miniconda3/envs/"..., "GCC=/home/scuzee/miniconda3/envs"..., "QT_IM_MODULE=ibus", "LD_GOLD=/home/scuzee/miniconda3/"..., "CONDA_PYTHON_EXE=/home/scuzee/mi"..., "FC_FONTATIONS=1", "XDG_RUNTIME_DIR=/run/user/1000", "CONDA_DEFAULT_ENV=cctools-dev", "OBJCOPY=/home/scuzee/miniconda3/"..., "VSCODE_GIT_ASKPASS_MAIN=/usr/sha"..., "STRIP=/home/scuzee/miniconda3/en"..., "XDG_DATA_DIRS=/usr/share/ubuntu:"..., "GDK_BACKEND=wayland", "OBJDUMP=/home/scuzee/miniconda3/"..., "PATH=/home/scuzee/miniconda3/env"..., "GDMSESSION=ubuntu", "CC=/home/scuzee/miniconda3/envs/"..., "CFLAGS=-march=nocona -mtune=hasw"..., "CXXFILT=/home/scuzee/miniconda3/"..., "DBUS_SESSION_BUS_ADDRESS=unix:pa"..., "BUILD=x86_64-conda-linux-gnu", "NVM_BIN=/home/scuzee/.nvm/versio"..., "RANLIB=/home/scuzee/miniconda3/e"..., "CONDA_BUILD_SYSROOT=/home/scuzee"..., "OLDPWD=/home/scuzee/Programming/"..., "TERM_PROGRAM=vscode", "_=/usr/bin/cat"]) = 0
+brk(NULL)                               = 0x5596c31fb000
+arch_prctl(0x3001 /* ARCH_??? */, 0x7fffba4b0720) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x789c672b5000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+newfstatat(3</etc/ld.so.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=10880247, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=312, st_size=156428, st_atime=1772032592 /* 2026-02-25T10:16:32.456199691-0500 */, st_atime_nsec=456199691, st_mtime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_mtime_nsec=516513193, st_ctime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_ctime_nsec=516513193}, AT_EMPTY_PATH) = 0
+mmap(NULL, 156428, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x789c6728e000
+close(3</etc/ld.so.cache>)              = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+read(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\t\\{\241H\256\312\201f\200\221\367\30\4px"..., 68, 896) = 68
+newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790130, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4344, st_size=2220400, st_atime=1772032592 /* 2026-02-25T10:16:32.463199719-0500 */, st_atime_nsec=463199719, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.979961671-0500 */, st_ctime_nsec=979961671}, AT_EMPTY_PATH) = 0
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0) = 0x789c67000000
+mprotect(0x789c67028000, 2023424, PROT_NONE) = 0
+mmap(0x789c67028000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x28000) = 0x789c67028000
+mmap(0x789c671bd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x1bd000) = 0x789c671bd000
+mmap(0x789c67216000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x215000) = 0x789c67216000
+mmap(0x789c6721c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x789c6721c000
+close(3</usr/lib/x86_64-linux-gnu/libc.so.6>) = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x789c6728b000
+arch_prctl(ARCH_SET_FS, 0x789c6728b740) = 0
+set_tid_address(0x789c6728ba10)         = 980264
+set_robust_list(0x789c6728ba20, 24)     = 0
+rseq(0x789c6728c0e0, 0x20, 0, 0x53053053) = 0
+mprotect(0x789c67216000, 16384, PROT_READ) = 0
+mprotect(0x5596b6591000, 4096, PROT_READ) = 0
+mprotect(0x789c672ef000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x789c6728e000, 156428)          = 0
+getrandom("\x3a\x73\x31\x28\x05\xd8\x99\xa8", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x5596c31fb000
+brk(0x5596c321c000)                     = 0x5596c321c000
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/locale-archive>
+newfstatat(3</usr/lib/locale/locale-archive>, "", {st_dev=makedev(0x103, 0x2), st_ino=27789917, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=11072, st_size=5712208, st_atime=1772032592 /* 2026-02-25T10:16:32.464199723-0500 */, st_atime_nsec=464199723, st_mtime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_mtime_nsec=561964634, st_ctime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_ctime_nsec=561964634}, AT_EMPTY_PATH) = 0
+mmap(NULL, 5712208, PROT_READ, MAP_PRIVATE, 3</usr/lib/locale/locale-archive>, 0) = 0x789c66a00000
+close(3</usr/lib/locale/locale-archive>) = 0
+newfstatat(1<pipe:[6759153]>, "", {st_dev=makedev(0, 0xe), st_ino=6759153, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_atime_nsec=893085298, st_mtime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_mtime_nsec=893085298, st_ctime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_ctime_nsec=893085298}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output", O_RDONLY) = 3</home/scuzee/Programming/pledge/src/test_pipes/test_output>
+newfstatat(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>, "", {st_dev=makedev(0x103, 0x2), st_ino=29635387, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=6, st_atime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_atime_nsec=892085298, st_mtime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_mtime_nsec=892085298, st_ctime=1772037506 /* 2026-02-25T11:38:26.892085298-0500 */, st_ctime_nsec=892085298}, AT_EMPTY_PATH) = 0
+fadvise64(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+mmap(NULL, 139264, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x789c67293000
+read(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>, "hello\n", 131072) = 6
+write(1<pipe:[6759153]>, "hello\n", 6)  = 6
+read(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>, "", 131072) = 0
+munmap(0x789c67293000, 139264)          = 0
+close(3</home/scuzee/Programming/pledge/src/test_pipes/test_output>) = 0
+close(1<pipe:[6759153]>)                = 0
+close(2</dev/pts/1>)                    = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+set_robust_list(0x7e709a88ca20, 24)     = 0
+getpid()                                = 980265
+close(255</home/scuzee/Programming/pledge/src/test_pipes/output>) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+dup2(3<pipe:[6759153]>, 0</dev/pts/1>)  = 0<pipe:[6759153]>
+close(3<pipe:[6759153]>)                = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, ".", {st_dev=makedev(0x103, 0x2), st_ino=29635385, st_mode=S_IFDIR|0775, st_nlink=2, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1772037496 /* 2026-02-25T11:38:16.445091524-0500 */, st_atime_nsec=445091524, st_mtime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_mtime_nsec=893085298, st_ctime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_ctime_nsec=893085298}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/envs/cctools-dev/bin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.nvm/versions/node/v22.21.0/bin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/miniconda3/condabin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/.local/bin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/home/scuzee/bin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/sbin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/local/bin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/sbin/grep", 0x7fff76535ab0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/grep", X_OK)           = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/grep", R_OK)           = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/grep", X_OK)           = 0
+newfstatat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/bin/grep", {st_dev=makedev(0x103, 0x2), st_ino=27787713, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=360, st_size=182728, st_atime=1772033841 /* 2026-02-25T10:37:21.947082191-0500 */, st_atime_nsec=947082191, st_mtime=1648043773 /* 2022-03-23T09:56:13-0400 */, st_mtime_nsec=0, st_ctime=1652566840 /* 2022-05-14T18:20:40.573495320-0400 */, st_ctime_nsec=573495320}, 0) = 0
+geteuid()                               = 1000
+getegid()                               = 1000
+getuid()                                = 1000
+getgid()                                = 1000
+access("/usr/bin/grep", R_OK)           = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7e709a642520}, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, {sa_handler=0x651fb918ad70, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7e709a642520}, 8) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "test_output2", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</home/scuzee/Programming/pledge/src/test_pipes/test_output2>
+dup2(3</home/scuzee/Programming/pledge/src/test_pipes/test_output2>, 1</dev/pts/1>) = 1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>
+close(3</home/scuzee/Programming/pledge/src/test_pipes/test_output2>) = 0
+execve("/usr/bin/grep", ["grep", "hello"], ["SHELL=/bin/bash", "SESSION_MANAGER=local/thinkpad:@"..., "QT_ACCESSIBILITY=1", "NVM_RC_VERSION=", "COLORTERM=truecolor", "GCC_RANLIB=/home/scuzee/minicond"..., "XDG_CONFIG_DIRS=/etc/xdg/xdg-ubu"..., "VSCODE_DEBUGPY_ADAPTER_ENDPOINTS"..., "SSH_AGENT_LAUNCHER=gnome-keyring", "NVM_INC=/home/scuzee/.nvm/versio"..., "XDG_MENU_PREFIX=gnome-", "TERM_PROGRAM_VERSION=1.107.0", "GNOME_DESKTOP_SESSION_ID=this-is"..., "CONDA_EXE=/home/scuzee/miniconda"..., "_CE_M=", "build_alias=x86_64-conda-linux-g"..., "CMAKE_ARGS=-DCMAKE_AR=/home/scuz"..., "GPROF=/home/scuzee/miniconda3/en"..., "CONDA_TOOLCHAIN_BUILD=x86_64-con"..., "GNOME_SHELL_SESSION_MODE=ubuntu", "_CONDA_PYTHON_SYSCONFIGDATA_NAME"..., "SSH_AUTH_SOCK=/run/user/1000/key"..., "STRINGS=/home/scuzee/miniconda3/"..., "CPP=/home/scuzee/miniconda3/envs"..., "PYDEVD_DISABLE_FILE_VALIDATION=1", "XMODIFIERS=@im=ibus", "DESKTOP_SESSION=ubuntu", "GTK_MODULES=gail:atk-bridge", "PWD=/home/scuzee/Programming/ple"..., "LOGNAME=scuzee", "XDG_SESSION_DESKTOP=ubuntu", "XDG_SESSION_TYPE=wayland", "CONDA_PREFIX=/home/scuzee/minico"..., "SYSTEMD_EXEC_PID=647341", "CXX=/home/scuzee/miniconda3/envs"..., "CXXFLAGS=-fvisibility-inlines-hi"..., "BUNDLED_DEBUGPY_PATH=/home/scuze"..., "XAUTHORITY=/run/user/1000/.mutte"..., "VSCODE_GIT_ASKPASS_NODE=/usr/sha"..., "CONDA_TOOLCHAIN_HOST=x86_64-cond"..., "DEBUG_CXXFLAGS=-fvisibility-inli"..., "LDFLAGS=-Wl,-O2 -Wl,--sort-commo"..., "HOME=/home/scuzee", "USERNAME=scuzee", "IM_CONFIG_PHASE=1", "LANG=en_US.UTF-8", "LS_COLORS=rs=0:di=01;34:ln=01;36"..., "DEBUG_CFLAGS=-march=nocona -mtun"..., "XDG_CURRENT_DESKTOP=ubuntu:GNOME", "PYTHONSTARTUP=/home/scuzee/.conf"..., "VTE_VERSION=6800", "WAYLAND_DISPLAY=wayland-0", "CXX_FOR_BUILD=/home/scuzee/minic"..., "ELFEDIT=/home/scuzee/miniconda3/"..., "CONDA_PROMPT_MODIFIER=(cctools-d"..., "GIT_ASKPASS=/usr/share/code/reso"..., "CMAKE_PREFIX_PATH=/home/scuzee/m"..., "GNOME_TERMINAL_SCREEN=/org/gnome"..., "CPPFLAGS=-DNDEBUG -D_FORTIFY_SOU"..., "LD=/home/scuzee/miniconda3/envs/"..., "READELF=/home/scuzee/miniconda3/"..., "CHROME_DESKTOP=code.desktop", "GXX=/home/scuzee/miniconda3/envs"..., "NVM_DIR=/home/scuzee/.nvm", "VSCODE_GIT_ASKPASS_EXTRA_ARGS=", "GNOME_SETUP_DISPLAY=:1", "VSCODE_PYTHON_AUTOACTIVATE_GUARD"..., "GCC_AR=/home/scuzee/miniconda3/e"..., "LESSCLOSE=/usr/bin/lesspipe %s %"..., "XDG_SESSION_CLASS=user", "ADDR2LINE=/home/scuzee/miniconda"..., "TERM=xterm-256color", "PYTHON_BASIC_REPL=1", "_CE_CONDA=", "SIZE=/home/scuzee/miniconda3/env"..., "GCC_NM=/home/scuzee/miniconda3/e"..., "HOST=x86_64-conda-linux-gnu", "LESSOPEN=| /usr/bin/lesspipe %s", "CC_FOR_BUILD=/home/scuzee/minico"..., "USER=scuzee", "VSCODE_GIT_IPC_HANDLE=/run/user/"..., "GNOME_TERMINAL_SERVICE=:1.2125", "CONDA_SHLVL=1", "AR=/home/scuzee/miniconda3/envs/"..., "AS=/home/scuzee/miniconda3/envs/"..., "DEBUG_CPPFLAGS=-D_DEBUG -D_FORTI"..., "host_alias=x86_64-conda-linux-gn"..., "DISPLAY=:0", "SHLVL=2", "NVM_CD_FLAGS=", "NM=/home/scuzee/miniconda3/envs/"..., "GCC=/home/scuzee/miniconda3/envs"..., "QT_IM_MODULE=ibus", "LD_GOLD=/home/scuzee/miniconda3/"..., "CONDA_PYTHON_EXE=/home/scuzee/mi"..., "FC_FONTATIONS=1", "XDG_RUNTIME_DIR=/run/user/1000", "CONDA_DEFAULT_ENV=cctools-dev", "OBJCOPY=/home/scuzee/miniconda3/"..., "VSCODE_GIT_ASKPASS_MAIN=/usr/sha"..., "STRIP=/home/scuzee/miniconda3/en"..., "XDG_DATA_DIRS=/usr/share/ubuntu:"..., "GDK_BACKEND=wayland", "OBJDUMP=/home/scuzee/miniconda3/"..., "PATH=/home/scuzee/miniconda3/env"..., "GDMSESSION=ubuntu", "CC=/home/scuzee/miniconda3/envs/"..., "CFLAGS=-march=nocona -mtune=hasw"..., "CXXFILT=/home/scuzee/miniconda3/"..., "DBUS_SESSION_BUS_ADDRESS=unix:pa"..., "BUILD=x86_64-conda-linux-gnu", "NVM_BIN=/home/scuzee/.nvm/versio"..., "RANLIB=/home/scuzee/miniconda3/e"..., "CONDA_BUILD_SYSROOT=/home/scuzee"..., "OLDPWD=/home/scuzee/Programming/"..., "TERM_PROGRAM=vscode", "_=/usr/bin/grep"]) = 0
+brk(NULL)                               = 0x57e38251b000
+arch_prctl(0x3001 /* ARCH_??? */, 0x7ffc91237d00) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x77525ad13000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+newfstatat(3</etc/ld.so.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=10880247, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=312, st_size=156428, st_atime=1772032592 /* 2026-02-25T10:16:32.456199691-0500 */, st_atime_nsec=456199691, st_mtime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_mtime_nsec=516513193, st_ctime=1771596801 /* 2026-02-20T09:13:21.516513193-0500 */, st_ctime_nsec=516513193}, AT_EMPTY_PATH) = 0
+mmap(NULL, 156428, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x77525acec000
+close(3</etc/ld.so.cache>)              = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libpcre.so.3", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>
+read(3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+newfstatat(3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790645, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=936, st_size=477296, st_atime=1772033841 /* 2026-02-25T10:37:21.948082216-0500 */, st_atime_nsec=948082216, st_mtime=1652773428 /* 2022-05-17T03:43:48-0400 */, st_mtime_nsec=0, st_ctime=1653074648 /* 2022-05-20T15:24:08.131165691-0400 */, st_ctime_nsec=131165691}, AT_EMPTY_PATH) = 0
+mmap(NULL, 479504, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, 0) = 0x77525ac76000
+mmap(0x77525ac78000, 348160, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, 0x2000) = 0x77525ac78000
+mmap(0x77525accd000, 118784, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, 0x57000) = 0x77525accd000
+mmap(0x77525acea000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>, 0x73000) = 0x77525acea000
+close(3</usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3>) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+read(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\t\\{\241H\256\312\201f\200\221\367\30\4px"..., 68, 896) = 68
+newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_dev=makedev(0x103, 0x2), st_ino=27790130, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4344, st_size=2220400, st_atime=1772032592 /* 2026-02-25T10:16:32.463199719-0500 */, st_atime_nsec=463199719, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.979961671-0500 */, st_ctime_nsec=979961671}, AT_EMPTY_PATH) = 0
+pread64(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0) = 0x77525aa00000
+mprotect(0x77525aa28000, 2023424, PROT_NONE) = 0
+mmap(0x77525aa28000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x28000) = 0x77525aa28000
+mmap(0x77525abbd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x1bd000) = 0x77525abbd000
+mmap(0x77525ac16000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/x86_64-linux-gnu/libc.so.6>, 0x215000) = 0x77525ac16000
+mmap(0x77525ac1c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x77525ac1c000
+close(3</usr/lib/x86_64-linux-gnu/libc.so.6>) = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x77525ac73000
+arch_prctl(ARCH_SET_FS, 0x77525ac73740) = 0
+set_tid_address(0x77525ac73a10)         = 980265
+set_robust_list(0x77525ac73a20, 24)     = 0
+rseq(0x77525ac740e0, 0x20, 0, 0x53053053) = 0
+mprotect(0x77525ac16000, 16384, PROT_READ) = 0
+mprotect(0x77525acea000, 4096, PROT_READ) = 0
+mprotect(0x57e38188e000, 4096, PROT_READ) = 0
+mprotect(0x77525ad4d000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x77525acec000, 156428)          = 0
+getrandom("\x99\x66\x50\x44\x3d\xdf\xef\x24", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x57e38251b000
+brk(0x57e38253c000)                     = 0x57e38253c000
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/locale-archive>
+newfstatat(3</usr/lib/locale/locale-archive>, "", {st_dev=makedev(0x103, 0x2), st_ino=27789917, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=11072, st_size=5712208, st_atime=1772032592 /* 2026-02-25T10:16:32.464199723-0500 */, st_atime_nsec=464199723, st_mtime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_mtime_nsec=561964634, st_ctime=1770126478 /* 2026-02-03T08:47:58.561964634-0500 */, st_ctime_nsec=561964634}, AT_EMPTY_PATH) = 0
+mmap(NULL, 5712208, PROT_READ, MAP_PRIVATE, 3</usr/lib/locale/locale-archive>, 0) = 0x77525a400000
+close(3</usr/lib/locale/locale-archive>) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_dev=makedev(0x103, 0x2), st_ino=28485176, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=56, st_size=27002, st_atime=1772033310 /* 2026-02-25T10:28:30.853664967-0500 */, st_atime_nsec=853664967, st_mtime=1769761256 /* 2026-01-30T03:20:56-0500 */, st_mtime_nsec=0, st_ctime=1770126482 /* 2026-02-03T08:48:02.987961665-0500 */, st_ctime_nsec=987961665}, AT_EMPTY_PATH) = 0
+mmap(NULL, 27002, PROT_READ, MAP_SHARED, 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, 0) = 0x77525ad0c000
+close(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>) = 0
+futex(0x77525ac1ba6c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3</etc/locale.alias>
+newfstatat(3</etc/locale.alias>, "", {st_dev=makedev(0x103, 0x2), st_ino=10879153, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=2996, st_atime=1772032592 /* 2026-02-25T10:16:32.479199782-0500 */, st_atime_nsec=479199782, st_mtime=1646362457 /* 2022-03-03T21:54:17-0500 */, st_mtime_nsec=0, st_ctime=1652566839 /* 2022-05-14T18:20:39.909495001-0400 */, st_ctime_nsec=909495001}, AT_EMPTY_PATH) = 0
+read(3</etc/locale.alias>, "# Locale name alias data base.\n#"..., 4096) = 2996
+read(3</etc/locale.alias>, "", 4096)    = 0
+close(3</etc/locale.alias>)             = 0
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en_US.UTF-8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en_US.utf8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en_US/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en.UTF-8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en.utf8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale/en/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en_US.UTF-8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en_US.utf8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en_US/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en.UTF-8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en.utf8/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/usr/share/locale-langpack/en/LC_MESSAGES/grep.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD</home/scuzee/Programming/pledge/src/test_pipes>, "/proc/self/maps", O_RDONLY) = 3</proc/980265/maps>
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x77525ad0a000
+lseek(3</proc/980265/maps>, 0, SEEK_SET) = 0
+read(3</proc/980265/maps>, "57e381862000-57e381866000 r--p 0"..., 8192) = 3153
+read(3</proc/980265/maps>, "", 5039)    = 0
+close(3</proc/980265/maps>)             = 0
+munmap(0x77525ad0a000, 8192)            = 0
+sigaltstack({ss_sp=0x57e38188f7c0, ss_flags=0, ss_size=65536}, NULL) = 0
+rt_sigaction(SIGSEGV, {sa_handler=0x57e381881310, sa_mask=[HUP INT QUIT USR1 USR2 PIPE ALRM TERM CHLD URG XCPU XFSZ VTALRM PROF WINCH IO PWR], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x77525aa42520}, NULL, 8) = 0
+rt_sigaction(SIGSEGV, {sa_handler=0x57e381881310, sa_mask=[HUP INT QUIT USR1 USR2 PIPE ALRM TERM CHLD URG XCPU XFSZ VTALRM PROF WINCH IO PWR], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x77525aa42520}, NULL, 8) = 0
+newfstatat(1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>, "", {st_dev=makedev(0x103, 0x2), st_ino=29635394, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_atime_nsec=895085296, st_mtime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_mtime_nsec=895085296, st_ctime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_ctime_nsec=895085296}, AT_EMPTY_PATH) = 0
+newfstatat(0<pipe:[6759153]>, "", {st_dev=makedev(0, 0xe), st_ino=6759153, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1772037506 /* 2026-02-25T11:38:26.893085298-0500 */, st_atime_nsec=893085298, st_mtime=1772037506 /* 2026-02-25T11:38:26.896085296-0500 */, st_mtime_nsec=896085296, st_ctime=1772037506 /* 2026-02-25T11:38:26.896085296-0500 */, st_ctime_nsec=896085296}, AT_EMPTY_PATH) = 0
+lseek(0<pipe:[6759153]>, 0, SEEK_CUR)   = -1 ESPIPE (Illegal seek)
+read(0<pipe:[6759153]>, "hello\n", 98304) = 6
+newfstatat(1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>, "", {st_dev=makedev(0x103, 0x2), st_ino=29635394, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_atime_nsec=895085296, st_mtime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_mtime_nsec=895085296, st_ctime=1772037506 /* 2026-02-25T11:38:26.895085296-0500 */, st_ctime_nsec=895085296}, AT_EMPTY_PATH) = 0
+brk(0x57e38255d000)                     = 0x57e38255d000
+read(0<pipe:[6759153]>, "", 98304)      = 0
+write(1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>, "hello\n", 6) = 6
+close(1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>) = 0
+brk(0x57e38255c000)                     = 0x57e38255c000
+close(2</dev/pts/1>)                    = 0
+exit_group(0)                           = ?
++++ exited with 0 +++

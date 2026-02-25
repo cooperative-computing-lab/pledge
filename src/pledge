@@ -2,13 +2,13 @@
 case "$1" in
   --trace)
     shift
-    python3 /home/scuzee/Programming/pledge/src/pledge_tracer.py "$@"
+    pledge_tracer.py "$@"
     ;;
   --trace-separate)
     shift
     strace -ff -y -v -s 1024 -o .pledgeproc --trace=file,read,write,mmap,lseek,clone "$@"
     ls .pledgeproc* 1>3; cat 3 | while read p; do echo $p | sed 's/\.pledgeproc\.//g' >> 4; done; rm 3; cat 4 | while read pid; do cat \.pledgeproc\.$pid | sed "s/^/\[pid $pid\] /g" >> 5; done; rm 4; mv 5 \.pledgeproc.concat
-    python3 /home/scuzee/Programming/pledge/src/pledge_tracer.py --trace-separate "$@"
+    pledge_tracer.py --trace-separate "$@"
     rm .pledgeproc* 2>/dev/null
     ;;
   *)

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm test_output test_output2
+
+echo "hello" > test_output
+
+cat test_output | grep "hello" > test_output2

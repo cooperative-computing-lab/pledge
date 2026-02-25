@@ -1,0 +1,140 @@
+
+#Process Tree:
+├─ PID 0 0 [./output, /usr/bin/rm, /usr/bin/cat, /usr/bin/grep]
+                RMPESX </usr> (19 files) [enoent: 27, exec: 9, mmap: 84, mmapsh: 6, read: 63, stat: 57]
+                                #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+                                #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+                                #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+        XRW </home/scuzee/Programming/pledge/src/test_pipes> (4 files) [exec: 3, read: 27, write: 6]
+                #	Executable: ./output  ATFDCWD: /home/scuzee/Programming/pledge/src",
+                #	Writable files: test_output, test_output*, test_output2, test_output2*
+                #	Readable files: output, test_output, output
+    ├─ PID 993006 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993007 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993008 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+    ├─ PID 993141 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993142 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993143 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+    ├─ PID 993232 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993233 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993234 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+├─ PID concat 0 [./output, /usr/bin/rm, /usr/bin/cat, /usr/bin/grep]
+                RMPESX </usr> (19 files) [enoent: 18, exec: 6, mmap: 56, mmapsh: 4, read: 42, stat: 38]
+                                #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+                                #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+                                #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+        XRW </home/scuzee/Programming/pledge/src/test_pipes> (4 files) [exec: 2, read: 18, write: 4]
+                #	Executable: ./output  ATFDCWD: /home/scuzee/Programming/pledge/src",
+                #	Writable files: test_output, test_output*, test_output2, test_output2*
+                #	Readable files: output, test_output, output
+    ├─ PID 993006 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993007 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993008 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+    ├─ PID 993141 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993142 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993143 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+├─ PID 993005 0 [./output]
+        XRW </home/scuzee/Programming/pledge/src/test_pipes> (3 files) [exec: 1, read: 6, write: 1]
+                #	Executable: ./output  ATFDCWD: /home/scuzee/Programming/pledge/src",
+                #	Writable files: test_output, test_output*
+                #	Readable files: output, output
+    ├─ PID 993006 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993007 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993008 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+├─ PID 993140 0 [./output]
+        XRW </home/scuzee/Programming/pledge/src/test_pipes> (3 files) [exec: 1, read: 6, write: 1]
+                #	Executable: ./output  ATFDCWD: /home/scuzee/Programming/pledge/src",
+                #	Writable files: test_output, test_output*
+                #	Readable files: output, output
+    ├─ PID 993141 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993142 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993143 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+├─ PID 993231 0 [./output]
+        XRW </home/scuzee/Programming/pledge/src/test_pipes> (3 files) [exec: 1, read: 6, write: 1]
+                #	Executable: ./output  ATFDCWD: /home/scuzee/Programming/pledge/src",
+                #	Writable files: test_output, test_output*
+                #	Readable files: output, output
+    ├─ PID 993232 1 [/usr/bin/rm]
+                    RPX </usr> (3 files) [exec: 1, mmap: 5, read: 3]
+                                        #	Executable: rm test_output test_output2  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+    ├─ PID 993233 1 [/usr/bin/cat]
+                    RMPEX </usr> (6 files) [enoent: 3, exec: 1, mmap: 5, read: 3, stat: 6]
+                                        #	Executable: cat test_output  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          R </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [read: 3]
+                    #	Readable files: test_output
+    ├─ PID 993234 1 [/usr/bin/grep]
+                    RMPESX </usr> (8 files) [enoent: 3, exec: 1, mmap: 9, mmapsh: 1, read: 6, stat: 6]
+                                        #	Executable: grep hello  ATFDCWD: /home/scuzee/Programming/pledge/src/test_pipes",
+          W </home/scuzee/Programming/pledge/src/test_pipes> (1 files) [write: 1]
+                    #	Writable files: test_output2, test_output2*
+CWD:  /home/scuzee/Programming/pledge/src/test_pipes
