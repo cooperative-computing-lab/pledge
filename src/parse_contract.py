@@ -463,7 +463,6 @@ class ContractParser:
         pipe_readers = []
         # combine pipe dependencies into a single task
         for rule in jx_workflow['rules']:
-                print(rule['inputs'], rule['outputs'])
                 if any('pipe' in r for r in rule['outputs']):
                     pipe_writers.append(rule)
                 if any('pipe' in r for r in rule['inputs']):
@@ -484,6 +483,8 @@ class ContractParser:
                 r['outputs'] += w['outputs']
 
             for (w, r) in pipe_rw_pairs:
+                r['inputs'].remove(next(i for i in r['inputs'] if 'pipe' in i))
+                r['outputs'].remove(next(o for o in r['outputs'] if 'pipe' in o))
                 jx_workflow['rules'].append(r)
 
 
