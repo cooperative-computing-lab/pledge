@@ -173,7 +173,7 @@ def run_strace(pid_or_cmd, separate):
     # strace -f -y --trace=file,read,write,mmap,getdents64,lseek,clone 
 
     if separate:
-        proc = subprocess.Popen(['cat .pledgeproc* 1>&2'], stderr=subprocess.PIPE, text=True, shell=True)
+        proc = subprocess.Popen(['cat .pledgeproc.concat 1>&2'], stderr=subprocess.PIPE, text=True, shell=True)
         print("Collecting strace process outputs")
         return proc
 
@@ -193,7 +193,10 @@ def parse_strace_output(strace_lines):
         r'open(?:at)?\([^,]*, "?([^"]+)"?, ([^,)]+)(?:, [^)]*)?\).*?= (\d+)<([^>]+)>'
     )
     read_re = re.compile(r'read\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
-    write_re = re.compile(r'write\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
+    # there are two spaces before the equal sign :>)
+    # [pid 998570] write(1<pipe:[6842817]>, "hello\n", 6)  = 6
+    # write(1</home/scuzee/Programming/pledge/src/test_pipes/test_output2>, "hello\n", 6) = 6
+    write_re = re.compile(r'write\((\d+)<([^>]+)>,.*?, (\d+)\) += (\d+)')
     mmap_re = re.compile(r'mmap\((?:.*), (?:.*), (?:.*), (.*), .*<(.*)>, (?:.*)\)')
     getdents_re = re.compile(r'getdents64\((\d+),')
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
@@ -331,7 +334,7 @@ def parse_strace_output(strace_lines):
 
         m = write_re.search(line)
         if m:
-            #print("write")
+            print(line)
             fd, filename, requested, length = m.groups()
             offset = fd_offsets.get(fd, 0)
             #print(f"Write to {filename} at offset {offset} with length {length}")
@@ -661,6 +664,8 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
         files_repeat = defaultdict(int)
         rw_mismatch_files = []
 
+        special_files = []
+
         for filename, node in file_tree.items():
             file = filename.split('/')[-1]
             if node.num_enoent > 0:
@@ -672,7 +677,10 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                 rw_mismatch_files.append(filename)
 
             dirpath = os.path.dirname(filename)
-            dir_tree[dirpath][filename] = node
+            if dirpath == '':
+                special_files.append((filename, node))
+            else:
+                dir_tree[dirpath][filename] = node
 
         base_list = ['', 'dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common', 'var']
 
@@ -782,7 +790,6 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
         # if a directory is a local reference, find the absolute path in the tree and combine them
         local_refs = {dirpath: files for dirpath, files in dir_tree.items() if not dirpath.startswith('/')}
 
-        #print(local_refs)
         for dirpath, files in local_refs.items():
             # try to find absolute path using cwd from openat calls
             abs_path = os.path.abspath(os.path.join(cwd if cwd else '/', dirpath))
@@ -932,7 +939,38 @@ def print_file_tree(pid_tree, pid_dep, no_pid=False, skip_base_dirs=True, indent
                         # reduce the number of files to a glob pattern
                         glob_string = inverse_glob(in_this_subpath.copy())
                         print(f"{indent*2}#\tReadable files (glob): {glob_string}")
+        
+        # handle special files. remove all but pipes for now
+        pipes = { filename: node for (filename, node) in special_files if 'pipe' in filename }
+        if pipes:
+            print(f"{indent}E </proc/{pid}> (0 files) [xxx]")        
 
+        for filename, node in pipes.items():
+            mode_counts = defaultdict(int)
+            for mode in node.modes:
+                mode_counts[mode] += 1
+            #mode_counts['open'] += node.num_opens
+            mode_counts['read'] += node.num_reads
+            mode_counts['write'] += node.num_writes
+            mode_counts['stat'] += node.num_stats
+            mode_counts['mmap'] += node.num_mmaps
+            mode_counts['getdents64'] += node.num_getdents
+            mode_counts['create'] += node.num_creates
+            mode_counts['enoent'] += node.num_enoent
+            mode_counts['mmapsh'] += node.num_mmapsh
+            if node.num_exec > 0: 
+                mode_counts['exec'] += node.num_exec
+
+            if all(value == 0 for mode, value in mode_counts.items() if mode != 'enoent'):
+                continue
+
+            access_chars = ''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)
+            indent = "  " * indent_level
+            #print(f"{indent}{access_chars} {filename} [{', '.join(f'{mode}: {count}' for mode, count in sorted(mode_counts.items()) if count > 0)}]")        
+            if 'R' in access_chars:
+                print(f"{indent*2}# \tReadable files: {filename}")
+            if 'W' in access_chars:
+                print(f"{indent*2}# \tWritable files: *{filename}")
         # search_files = []
         # for file, count in files_repeat.items():
         #     if count > 3:

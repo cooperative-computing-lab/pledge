@@ -91,10 +91,11 @@ class ContractParser:
                 dir_match = re.match(r'\s+([RWXMPDSCE]+)\s+<([^>]+)>\s+\(\d+\s+files?\)\s+\[([^\]]+)\]', line)
                 if dir_match:
                     access_types, directory, stats_str = dir_match.groups()
-                    
                     stats = self._parse_stats(stats_str)
+                    print(directory)
 
-                    current_directory = directory
+                    if 'E' not in access_types:
+                        current_directory = directory
                     
                     if 'R' in access_types or 'M' in access_types:
                         process.input_directories.add(directory)
@@ -320,16 +321,16 @@ class ContractParser:
 
                 directory_structure = set([])
 
-                # assign remote names, if necessary
-                for i, t in enumerate(target_names):
-                    if '/' in t:
-                        directory_structure.add('/'.join(t.split('/')[0:-1]))
-                        target_names[i] = {'dag_name': t, 'task_name': t.split('../')[-1]}
+                # # assign remote names, if necessary
+                # for i, t in enumerate(target_names):
+                #     if '/' in t:
+                #         directory_structure.add('/'.join(t.split('/')[0:-1]))
+                #         target_names[i] = {'dag_name': t, 'task_name': t.split('../')[-1]}
 
-                for i, d in enumerate(dependencies):
-                    if '/' in d:
-                        directory_structure.add('/'.join(d.split('/')[0:-1]))
-                        dependencies[i] = {'dag_name': d, 'task_name': d.split('../')[-1]}
+                # for i, d in enumerate(dependencies):
+                #     if '/' in d:
+                #         directory_structure.add('/'.join(d.split('/')[0:-1]))
+                #         dependencies[i] = {'dag_name': d, 'task_name': d.split('../')[-1]}
 
                 depth = 0
                 for dir in directory_structure:
@@ -448,6 +449,7 @@ class ContractParser:
         # remove output files that no other task depends on.
         # these are generally temporary to the task. If the task cleans them up
         # then we will have an error when we check if outputs were created
+        # pipe resolution may depend on this as well.
         if dag_prune:
             for rule in jx_workflow['rules']:
                 outputs = rule['outputs']
@@ -456,6 +458,53 @@ class ContractParser:
                     if any(o in r['inputs'] for r in jx_workflow['rules']):
                         new_outputs.append(o)
                 rule['outputs'] = new_outputs
+
+        pipe_writers = []
+        pipe_readers = []
+        # combine pipe dependencies into a single task
+        for rule in jx_workflow['rules']:
+                print(rule['inputs'], rule['outputs'])
+                if any('pipe' in r for r in rule['outputs']):
+                    pipe_writers.append(rule)
+                if any('pipe' in r for r in rule['inputs']):
+                    pipe_readers.append(rule)
+
+       
+
+        pipe_rw_pairs = [(w, r) for w, r in zip(pipe_readers, pipe_writers) if set(w['inputs']).intersection(set(r['outputs']))]
+
+        if pipe_rw_pairs != []:
+
+            for (w, r) in pipe_rw_pairs:
+                jx_workflow['rules'].remove(w)
+                jx_workflow['rules'].remove(r)
+
+                r['command'] = w['command'] + ' | ' + r['command']
+                r['inputs'] += w['inputs']
+                r['outputs'] += w['outputs']
+
+            for (w, r) in pipe_rw_pairs:
+                jx_workflow['rules'].append(r)
+
+
+        if name_comprehension:
+            # map of k,v for defines
+            task_vars = {}
+            count_rules = {}
+            # replace names with variables. Add to defines when applicable
+            for rule in jx_workflow['rules']:
+                # replace command with template + define
+                command = rule['command'].strip('"')
+                executable = command.split()[0]
+        
+                name = varname_from_command(executable)
+                args = command_args(command)
+
+                # swap command and args with variables
+                rule['command'] = JxTemplate(swap_for_var(command, args, name))
+
+                # the executable may appea
+
 
         if name_comprehension:
             # map of k,v for defines
