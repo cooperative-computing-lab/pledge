@@ -453,10 +453,15 @@ class ContractParser:
         if dag_prune:
             for rule in jx_workflow['rules']:
                 outputs = rule['outputs']
+                inputs = rule['inputs']
+
                 new_outputs = []
                 for i, o in enumerate(outputs):
                     if any(o in r['inputs'] for r in jx_workflow['rules']):
                         new_outputs.append(o)
+                if new_outputs == [] and inputs == []:
+                    jx_workflow['rules'].remove(rule)
+                    continue 
                 rule['outputs'] = new_outputs
 
         pipe_writers = []
@@ -468,9 +473,12 @@ class ContractParser:
                 if any('pipe' in r for r in rule['inputs']):
                     pipe_readers.append(rule)
 
-       
+        pipe_rw_pairs = []
 
-        pipe_rw_pairs = [(w, r) for w, r in zip(pipe_readers, pipe_writers) if set(w['inputs']).intersection(set(r['outputs']))]
+        for w in pipe_writers:
+            for r in pipe_readers:
+                if set(w['outputs']).intersection(set(r['inputs'])):
+                    pipe_rw_pairs.append((w, r))
 
         if pipe_rw_pairs != []:
 
